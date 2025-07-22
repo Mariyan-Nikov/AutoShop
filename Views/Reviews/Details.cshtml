@@ -1,0 +1,20 @@
+﻿@model AutoShop.Models.Review
+
+@{
+    ViewData["Title"] = "Review Details";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="card">
+    <div class="card-header">
+        Review for: @Model.Car.Brand @Model.Car.Model
+    </div>
+    <div class="card-body">
+        <p><strong>Content:</strong> @Model.Content</p>
+        <p><strong>Created On:</strong> @Model.CreatedOn.ToString("dd MMM yyyy HH:mm")</p>
+    </div>
+</div>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning mt-3">Edit</a>
+<a asp-action="Index" class="btn btn-secondary mt-3">Back to List</a>

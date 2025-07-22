@@ -1,0 +1,35 @@
+﻿@model IEnumerable<AutoShop.Models.Review>
+
+@{
+    ViewData["Title"] = "Reviews";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Car</th>
+            <th>Content</th>
+            <th>Created On</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var review in Model)
+        {
+            <tr>
+                <td>@review.Car.Brand @review.Car.Model</td>
+                <td>@review.Content</td>
+                <td>@review.CreatedOn.ToString("dd MMM yyyy")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@review.Id" class="btn btn-info btn-sm">Details</a>
+                    <a asp-action="Edit" asp-route-id="@review.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@review.Id" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-success">Add New Review</a>

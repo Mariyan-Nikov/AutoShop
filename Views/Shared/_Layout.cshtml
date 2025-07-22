@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AutoShop</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/AutoShop.styles.css" asp-append-version="true" />
+
+    <style>
+        .dark-theme {
+            background-color: #121212 !important;
+            color: #e0e0e0 !important;
+        }
+
+            .dark-theme .navbar,
+            .dark-theme .footer {
+                background-color: #1f1f1f !important;
+                color: #e0e0e0 !important;
+            }
+
+            .dark-theme a {
+                color: #90caf9 !important;
+            }
+
+            .dark-theme input,
+            .dark-theme select,
+            .dark-theme textarea {
+                background-color: #2c2c2c !important;
+                color: #f1f1f1 !important;
+                border: 1px solid #444 !important;
+            }
+
+                .dark-theme input::placeholder {
+                    color: #aaa;
+                }
+
+            .dark-theme label {
+                color: #ccc !important;
+            }
+
+            .dark-theme .form-control:focus {
+                background-color: #333 !important;
+                color: #fff !important;
+                border-color: #007bff;
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            }
+
+            .dark-theme .btn-primary {
+                background-color: #0d6efd;
+                border-color: #0d6efd;
+            }
+
+                .dark-theme .btn-primary:hover {
+                    background-color: #0b5ed7;
+                    border-color: #0a58ca;
+                }
+
+        .theme-toggle {
+            border: none;
+            background: none;
+            color: inherit;
+            font-size: 1.2rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+            .theme-toggle:hover {
+                background-color: rgba(255,255,255,0.1);
+                cursor: pointer;
+            }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AutoShop</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌗</button>
+                        <partial name="_LoginPartial" />
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - AutoShop - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        // Load theme on page load
+        (function () {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+            }
+        })();
+
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

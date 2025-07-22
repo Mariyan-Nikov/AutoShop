@@ -1,0 +1,7 @@
+﻿@{
+    ViewData["Title"] = "Грешка " + ViewBag.StatusCode;
+}
+
+<h1>Грешка @ViewBag.StatusCode</h1>
+<p>@ViewBag.Message</p>
+<a href="@Url.Action("Index", "Home")">Върни се към началната страница</a>

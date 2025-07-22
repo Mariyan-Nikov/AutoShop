@@ -1,0 +1,24 @@
+﻿@model AutoShop.Models.OrderItem
+@{
+    ViewData["Title"] = "Delete Order Item";
+}
+
+<h2 class="mb-4 text-danger">Delete Order Item</h2>
+
+<div class="alert alert-warning">
+    <strong>Are you sure you want to delete this order item?</strong>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Order ID:</strong> @Model.Order.Id</p>
+        <p><strong>Car:</strong> @Model.Car.Model</p>
+        <p><strong>Quantity:</strong> @Model.Quantity</p>
+    </div>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger mt-3">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary mt-3">Cancel</a>
+</form>

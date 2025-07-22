@@ -1,0 +1,65 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* ---------------- DARK THEME FIXES FOR FORMS ---------------- */
+
+.dark-theme body {
+    background-color: #121212;
+    color: #f1f1f1;
+}
+
+.dark-theme input.form-control,
+.dark-theme .form-control {
+    background-color: #1e1e1e !important;
+    color: #ffffff !important;
+    border: 1px solid #444 !important;
+}
+
+    .dark-theme .form-control::placeholder {
+        color: #aaaaaa;
+        opacity: 1;
+    }
+
+.dark-theme .form-floating > label {
+    color: #cccccc !important;
+    background-color: transparent !important;
+}
+
+.dark-theme .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.dark-theme .text-danger {
+    color: #ff6b6b;
+}
+
+.dark-theme .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+    .dark-theme .btn-primary:hover {
+        background-color: #0b5ed7;
+        border-color: #0a58ca;
+    }

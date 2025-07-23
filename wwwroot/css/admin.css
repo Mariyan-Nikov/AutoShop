@@ -73,3 +73,35 @@
         transform: translateY(0);
     }
 }
+
+h1 {
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.table {
+    background-color: #ecf0f1;
+}
+
+    .table thead {
+        background-color: #34495e;
+        color: white;
+    }
+
+.btn-primary {
+    background-color: #2980b9;
+    border: none;
+}
+
+    .btn-primary:hover {
+        background-color: #3498db;
+    }
+
+.btn-danger {
+    background-color: #c0392b;
+    border: none;
+}
+
+    .btn-danger:hover {
+        background-color: #e74c3c;
+    }

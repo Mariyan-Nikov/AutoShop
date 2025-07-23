@@ -1,0 +1,52 @@
+﻿@model IEnumerable<AutoShop.Models.Category>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Всички категории";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">@ViewData["Title"]</h1>
+    <a asp-area="Admin" asp-controller="Category" asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Добави нова категория
+    </a>
+</div>
+
+<table class="table table-bordered table-striped table-hover align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th style="width: 10%;">ID</th>
+            <th>Име</th>
+            <th>Описание</th>
+            <th style="width: 20%;" class="text-center">Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="4" class="text-center text-muted fst-italic">Няма налични категории.</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var category in Model)
+            {
+                <tr>
+                    <td>@category.Id</td>
+                    <td>@category.Name</td>
+                    <td>@category.Description</td>
+                    <td class="text-center">
+                        <a asp-area="Admin" asp-controller="Category" asp-action="Edit" asp-route-id="@category.Id" class="btn btn-sm btn-warning me-1" title="Редактирай">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a asp-area="Admin" asp-controller="Category" asp-action="Delete" asp-route-id="@category.Id" class="btn btn-sm btn-danger" title="Изтрий"
+                           onclick="return confirm('Сигурни ли сте, че искате да изтриете тази категория?');">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

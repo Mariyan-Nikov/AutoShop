@@ -1,0 +1,20 @@
+﻿@model AutoShop.Models.Category
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Изтрий категория";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="alert alert-danger mt-4">
+    Сигурни ли сте, че искате да изтриете категорията: <strong>@Model.Name</strong>?
+</div>
+
+<form asp-area="Admin" asp-controller="Category" asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">
+        <i class="bi bi-trash-fill"></i> Изтрий
+    </button>
+    <a asp-area="Admin" asp-controller="Category" asp-action="All" class="btn btn-secondary ms-2">Отказ</a>
+</form>

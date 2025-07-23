@@ -1,21 +1,13 @@
 ﻿@page
 @model LogoutModel
 @{
-    ViewData["Title"] = "Log out";
+    ViewData["Title"] = "Logout";
 }
 
-<header>
-    <h1>@ViewData["Title"]</h1>
-    @{
-        if (User.Identity?.IsAuthenticated ?? false)
-        {
-            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
-                <button type="submit" class="nav-link btn btn-link text-dark">Click here to Logout</button>
-            </form>
-        }
-        else
-        {
-            <p>You have successfully logged out of the application.</p>
-        }
-    }
-</header>
+<div class="container py-5" style="max-width: 400px;">
+    <h2 class="mb-4">Изход</h2>
+    <form method="post">
+        <p>Сигурни ли сте, че искате да излезете от профила си?</p>
+        <button type="submit" class="btn btn-danger w-100">Изход</button>
+    </form>
+</div>

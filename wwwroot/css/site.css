@@ -1,53 +1,86 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
+/* Базови стилове (светла тема) */
 body {
-  margin-bottom: 60px;
+    background-color: #fff;
+    color: #212529; /* тъмно сиво за текст */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-bottom: 0; /* премахнат padding за фиксиран футър */
 }
 
-/* ---------------- DARK THEME FIXES FOR FORMS ---------------- */
+input.form-control,
+select.form-control,
+textarea.form-control {
+    background-color: #fff;
+    color: #212529;
+    border: 1px solid #ced4da;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
 
+    input.form-control::placeholder,
+    textarea.form-control::placeholder {
+        color: #6c757d; /* сиво */
+        opacity: 1;
+    }
+
+    input.form-control:focus,
+    select.form-control:focus,
+    textarea.form-control:focus {
+        border-color: #0d6efd; /* bootstrap primary */
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        outline: none;
+    }
+
+label {
+    color: #212529;
+    font-weight: 600;
+}
+
+.text-danger {
+    color: #dc3545;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+    .btn-primary:hover {
+        background-color: #0b5ed7;
+        border-color: #0a58ca;
+    }
+
+/* --------------------------------- */
+
+/* Тъмна тема */
 .dark-theme body {
     background-color: #121212;
-    color: #f1f1f1;
+    color: #e4e4e4;
 }
 
 .dark-theme input.form-control,
-.dark-theme .form-control {
-    background-color: #1e1e1e !important;
-    color: #ffffff !important;
-    border: 1px solid #444 !important;
+.dark-theme select.form-control,
+.dark-theme textarea.form-control {
+    background-color: #1e1e1e;
+    color: #e4e4e4;
+    border: 1px solid #444;
 }
 
-    .dark-theme .form-control::placeholder {
+    .dark-theme input.form-control::placeholder,
+    .dark-theme textarea.form-control::placeholder {
         color: #aaaaaa;
         opacity: 1;
     }
 
-.dark-theme .form-floating > label {
-    color: #cccccc !important;
-    background-color: transparent !important;
-}
+    .dark-theme input.form-control:focus,
+    .dark-theme select.form-control:focus,
+    .dark-theme textarea.form-control:focus {
+        border-color: #66aaff;
+        box-shadow: 0 0 0 0.25rem rgba(102, 170, 255, 0.5);
+        outline: none;
+    }
 
-.dark-theme .form-control:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+.dark-theme label {
+    color: #ccc;
 }
 
 .dark-theme .text-danger {
@@ -63,3 +96,18 @@ body {
         background-color: #0b5ed7;
         border-color: #0a58ca;
     }
+
+/* Футър без фиксиране */
+footer.footer {
+    border-top: 1px solid #ccc; /* тънка светлосива линия */
+    padding: 0.5rem 0; /* по-малко вътрешен отстъп */
+    background-color: #fff; /* фон, ако е светла тема */
+    color: #6c757d; /* по-светъл текст */
+    /* премахнато position: fixed и др. */
+}
+
+.dark-theme footer.footer {
+    background-color: #121212; /* фон за тъмна тема */
+    border-top: 1px solid #444; /* линия по-тъмна за тъмна тема */
+    color: #aaa;
+}

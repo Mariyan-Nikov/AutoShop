@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using AutoShop.Services.Interfaces;
 using AutoShop.ViewModels.Car;
 
-
-
 namespace AutoShop.Controllers
 {
     public class CarController : Controller
@@ -17,10 +15,12 @@ namespace AutoShop.Controllers
             _carService = carService;
         }
 
-        public async Task<IActionResult> Index()
+        // Index с търсене и странициране
+        public async Task<IActionResult> Index(string? searchTerm, int currentPage = 1)
         {
-            var cars = await _carService.GetAllAsync();
-            return View(cars);
+            int carsPerPage = 5; // можеш да го направиш configurable, ако искаш
+            var model = await _carService.GetAllAsync(searchTerm, currentPage, carsPerPage);
+            return View(model);
         }
 
         public async Task<IActionResult> Details(int id)
@@ -84,13 +84,5 @@ namespace AutoShop.Controllers
             await _carService.DeleteCarAsync(id);
             return RedirectToAction(nameof(Index));
         }
-        public async Task<IActionResult> All(string? searchTerm, int currentPage = 1)
-        {
-            int carsPerPage = 5; // фиксирана стойност или взета от конфигурация
-            var model = await _carService.GetAllAsync(searchTerm, currentPage, carsPerPage);
-            return View(model);
-        }
-
     }
-
 }

@@ -18,10 +18,19 @@ namespace AutoShop.Services
             _context = context;
         }
 
-        // Връща всички коли (без филтри, за вътрешна употреба)
-        public async Task<IEnumerable<Car>> GetAllAsync()
+        // Връща всички коли за drop-down, OrderItem и други вътрешни нужди
+        public async Task<IEnumerable<CarViewModel>> GetAllAsync()
         {
-            return await _context.Cars.ToListAsync();
+            return await _context.Cars
+                .Select(c => new CarViewModel
+                {
+                    Id = c.Id,
+                    Brand = c.Brand,
+                    Model = c.Model,
+                    Year = c.Year,
+                    RegistrationNumber = c.RegistrationNumber
+                })
+                .ToListAsync();
         }
 
         // Връща кола по ID
@@ -93,26 +102,6 @@ namespace AutoShop.Services
                 TotalCars = totalCars,
                 CarsPerPage = carsPerPage
             };
-        }
-
-        public async Task CreateAsync(Car newCar)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task UpdateAsync(int id, Car updatedCar)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
         }
     }
 }

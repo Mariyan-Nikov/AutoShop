@@ -10,13 +10,13 @@
     <link rel="stylesheet" href="~/AutoShop.styles.css" asp-append-version="true" />
 
     <style>
+        /* Тъмен режим */
         .dark-theme {
             background-color: #121212 !important;
             color: #e0e0e0 !important;
         }
 
-            .dark-theme .navbar,
-            .dark-theme .footer {
+            .dark-theme .navbar {
                 background-color: #1f1f1f !important;
                 color: #e0e0e0 !important;
             }
@@ -62,14 +62,14 @@
             border: none;
             background: none;
             color: inherit;
-            font-size: 1.2rem;
-            padding: 4px 8px;
+            font-size: 1.6rem; /* увеличен размер за по-добра видимост */
+            padding: 8px 12px; /* повече padding за по-лесно натискане */
             border-radius: 6px;
+            cursor: pointer;
         }
 
             .theme-toggle:hover {
                 background-color: rgba(255,255,255,0.1);
-                cursor: pointer;
             }
     </style>
 </head>
@@ -91,7 +91,28 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+
+                        <!-- Drop-down меню за Cars -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark @(ViewContext.RouteData.Values["controller"]?.ToString() == "Car" ? "active" : "")"
+                               href="#" id="carsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Cars Catalog
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="carsDropdown">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Car" asp-action="Index">List Cars</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Car" asp-action="Create">Add New Car</a>
+                                </li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Car" asp-action="All">Search Cars</a>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
+
                     <div class="d-flex align-items-center gap-2">
                         <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌗</button>
                         <partial name="_LoginPartial" />
@@ -107,18 +128,11 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - AutoShop - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     <script>
-        // Load theme on page load
         (function () {
             const theme = localStorage.getItem('theme');
             if (theme === 'dark') {

@@ -1,8 +1,44 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "AutoShop – Начална страница";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5">
+    <h1 class="text-center mb-4 display-5 fw-bold">Добре дошли в <span class="text-primary">AutoShop</span>!</h1>
+    <p class="text-center mb-5 fs-5 text-muted">Най-доброто място за покупка, продажба и преглед на автомобили онлайн.</p>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 bg-dark text-white">
+                <img src="~/images/sportcar.jpg" class="card-img-top" alt="Спортен автомобил">
+                <div class="card-body">
+                    <h5 class="card-title">Спортни коли</h5>
+                    <p class="card-text">Бързи, мощни и стилни – разгледай нашите предложения.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 bg-dark text-white">
+                <img src="~/images/electric.jpg" class="card-img-top" alt="Електрически автомобил">
+                <div class="card-body">
+                    <h5 class="card-title">Електрически коли</h5>
+                    <p class="card-text">Бъдещето на мобилността – открий електрическия избор.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 bg-dark text-white">
+                <img src="~/images/suv.jpg" class="card-img-top" alt="SUV автомобил">
+                <div class="card-body">
+                    <h5 class="card-title">SUV & 4x4</h5>
+                    <p class="card-text">Мощ и удобство за всякакъв терен – намери своя SUV.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5 mb-5">
+        <h3 class="fw-semibold">Нов си тук?</h3>
+        <p class="text-muted mb-3">Регистрирай се сега и започни да разглеждаш и публикуваш автомобили.</p>
+        <a class="btn btn-lg btn-primary px-4" asp-area="Identity" asp-page="/Account/Register">Регистрация</a>
+    </div>
 </div>

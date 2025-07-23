@@ -15,7 +15,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// **3. Регистрация само на Identity с роли (премахваме AddDefaultIdentity)**
+// 3. Регистрация на Identity с роли
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -38,44 +38,8 @@ builder.Services.AddRazorPages();
 var app = builder.Build();
 
 // 6. Seed на роли и задаване на първия потребител като админ
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
-
-    string[] roles = { "Administrator", "User" };
-
-    foreach (var role in roles)
-    {
-        if (!await roleManager.RoleExistsAsync(role))
-        {
-            await roleManager.CreateAsync(new IdentityRole(role));
-        }
-    }
-
-    var firstUser = userManager.Users.FirstOrDefault();
-
-    if (firstUser != null)
-    {
-        var isAdmin = await userManager.IsInRoleAsync(firstUser, "Administrator");
-        if (!isAdmin)
-        {
-            await userManager.AddToRoleAsync(firstUser, "Administrator");
-        }
-    }
-}
-
-// 7. Middleware pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseMigrationsEndPoint();
-}
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
+// Вкарваме асинхронния seed в метод, който извикваме синхронно
+SeedRolesAndAdminUser(app.Services).GetAwaiter().GetResult();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -104,3 +68,32 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/Home/StatusCode", "?code={0}");
 
 app.Run();
+
+// Асинхронен метод за seed
+static async Task SeedRolesAndAdminUser(IServiceProvider services)
+{
+    using var scope = services.CreateScope();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+    string[] roles = { "Administrator", "User" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    var firstUser = userManager.Users.FirstOrDefault();
+
+    if (firstUser != null)
+    {
+        var isAdmin = await userManager.IsInRoleAsync(firstUser, "Administrator");
+        if (!isAdmin)
+        {
+            await userManager.AddToRoleAsync(firstUser, "Administrator");
+        }
+    }
+}

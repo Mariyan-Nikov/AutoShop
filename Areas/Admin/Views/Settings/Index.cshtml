@@ -1,0 +1,64 @@
+﻿@model AutoShop.Areas.Admin.Controllers.SettingsViewModel
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Настройки";
+}
+
+<h1 class="mb-4">@ViewData["Title"]</h1>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<form asp-area="Admin" asp-controller="Settings" asp-action="Index" method="post" class="needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label asp-for="SiteName" class="form-label"></label>
+        <input asp-for="SiteName" class="form-control" placeholder="Име на сайта" required />
+        <span asp-validation-for="SiteName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ItemsPerPage" class="form-label"></label>
+        <input asp-for="ItemsPerPage" class="form-control" type="number" placeholder="Брой елементи на страница" min="1" max="100" required />
+        <span asp-validation-for="ItemsPerPage" class="text-danger"></span>
+    </div>
+
+    <div class="form-check mb-4">
+        <input asp-for="EnableNotifications" class="form-check-input" type="checkbox" id="EnableNotifications" />
+        <label asp-for="EnableNotifications" class="form-check-label"></label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Запази</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Bootstrap client-side validation example
+        (function () {
+            'use strict'
+
+            var forms = document.querySelectorAll('.needs-validation')
+
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+}

@@ -1,0 +1,17 @@
+﻿@model AutoShop.Models.Dealer
+@{
+    ViewData["Title"] = "Изтриване на дилър";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2><i class="bi bi-trash"></i> Изтриване на дилър</h2>
+
+<div class="alert alert-danger">
+    Сигурни ли сте, че искате да изтриете дилъра <strong>@Model.Name</strong>?
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Да, изтрий</button>
+    <a href="@Url.Action("All")" class="btn btn-secondary">Отказ</a>
+</form>

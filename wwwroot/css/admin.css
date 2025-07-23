@@ -1,0 +1,75 @@
+﻿.custom-admin-header {
+    font-size: 28px;
+    font-weight: bold;
+    color: #1d3557;
+    margin-bottom: 25px;
+    text-align: center;
+    padding: 15px;
+    border-bottom: 2px solid #457b9d;
+}
+
+.custom-table-wrapper {
+    background-color: #f8f9fa;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    max-width: 1000px;
+}
+
+.custom-user-table {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+    .custom-user-table th {
+        background-color: #343a40;
+        color: white;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .custom-user-table td {
+        text-align: center;
+        vertical-align: middle;
+        padding: 10px;
+    }
+
+    .custom-user-table tbody tr:hover {
+        background-color: #e9ecef;
+        transition: 0.3s;
+    }
+
+.status-confirmed {
+    background-color: #198754;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9em;
+}
+
+.status-unconfirmed {
+    background-color: #dc3545;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9em;
+}
+
+.user-count {
+    margin-top: 20px;
+    font-size: 0.95em;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

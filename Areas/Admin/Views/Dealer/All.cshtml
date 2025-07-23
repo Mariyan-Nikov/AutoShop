@@ -1,0 +1,37 @@
+﻿@model IEnumerable<AutoShop.Models.Dealer>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Всички дилъри";
+}
+<a href="/Admin/Dealer/Create" class="btn btn-primary mb-3">Добави нов дилър</a>
+
+<h1>@ViewData["Title"]</h1>
+
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Име</th>
+            <th>Адрес</th>
+            <th>Телефон</th>
+            <th>Email</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var dealer in Model)
+        {
+            <tr>
+                <td>@dealer.Name</td>
+                <td>@dealer.Address</td>
+                <td>@dealer.PhoneNumber</td>
+                <td>@dealer.Email</td>
+                <td>
+                    <a asp-area="Admin" asp-controller="Dealer" asp-action="Edit" asp-route-id="@dealer.Id" class="btn btn-warning btn-sm me-1">Редактирай</a>
+                    <a asp-area="Admin" asp-controller="Dealer" asp-action="Delete" asp-route-id="@dealer.Id" class="btn btn-danger btn-sm">Изтрий</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

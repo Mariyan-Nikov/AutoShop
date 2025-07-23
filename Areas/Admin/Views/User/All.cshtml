@@ -1,0 +1,51 @@
+﻿@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityUser>
+
+@{
+    ViewData["Title"] = "Администриране на потребители";
+}
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml"; // коригирай според пътя и името
+}
+
+
+<div class="custom-admin-header">
+    <i class="bi bi-people-fill"></i> Списък с регистрирани потребители
+</div>
+
+<div class="custom-table-wrapper mx-auto">
+    <table class="table custom-user-table">
+        <thead>
+            <tr>
+                <th><i class="bi bi-person-circle"></i> Потребителско име</th>
+                <th><i class="bi bi-envelope-at-fill"></i> Имейл</th>
+                <th><i class="bi bi-phone-fill"></i> Телефон</th>
+                <th><i class="bi bi-check-circle-fill"></i> Потвърден</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.UserName</td>
+                    <td>@user.Email</td>
+                    <td>@(user.PhoneNumber ?? "няма")</td>
+                    <td>
+                        @if (user.EmailConfirmed)
+                        {
+                            <span class="status-confirmed">Да</span>
+                        }
+                        else
+                        {
+                            <span class="status-unconfirmed">Не</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="user-count text-end text-muted">
+        Общо: <strong>@Model.Count()</strong> потребителя
+    </div>
+</div>

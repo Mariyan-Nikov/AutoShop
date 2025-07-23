@@ -15,5 +15,7 @@ namespace AutoShop.Data
         public DbSet<Order> Orders { get; set; } = null!;
         public DbSet<OrderItem> OrderItems { get; set; } = null!;
         public DbSet<Review> Reviews { get; set; } = null!;
+        public DbSet<Dealer> Dealers { get; set; }
+
     }
 }

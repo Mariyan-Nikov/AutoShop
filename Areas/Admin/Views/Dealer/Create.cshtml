@@ -1,50 +1,67 @@
 ﻿@model AutoShop.Models.Dealer
-
-
 @{
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Добавяне на нов дилър";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="card shadow-sm mt-4">
+    <div class="card-body">
+        <h1 class="mb-4">@ViewData["Title"]</h1>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <form asp-area="Admin" asp-controller="Dealer" asp-action="Create" method="post" class="needs-validation" novalidate>
-                @Html.AntiForgeryToken()
+        <form id="createDealerForm" asp-area="Admin" asp-controller="Dealer" asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
 
-                <div class="mb-3">
-                    <label asp-for="Name" class="form-label"></label>
-                    <input asp-for="Name" class="form-control" placeholder="Въведи име" required />
-                    <span asp-validation-for="Name" class="text-danger"></span>
-                </div>
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Име на дилър</label>
+                <input asp-for="Name" class="form-control" placeholder="Въведете име" />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
 
-                <div class="mb-3">
-                    <label asp-for="Address" class="form-label"></label>
-                    <input asp-for="Address" class="form-control" placeholder="Въведи адрес" required />
-                    <span asp-validation-for="Address" class="text-danger"></span>
-                </div>
+            <div class="mb-3">
+                <label asp-for="Address" class="form-label">Адрес</label>
+                <input asp-for="Address" class="form-control" placeholder="Въведете адрес" />
+                <span asp-validation-for="Address" class="text-danger small"></span>
+            </div>
 
-                <div class="mb-3">
-                    <label asp-for="PhoneNumber" class="form-label"></label>
-                    <input asp-for="PhoneNumber" class="form-control" placeholder="Въведи телефон" />
-                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                </div>
+            <div class="mb-3">
+                <label asp-for="PhoneNumber" class="form-label">Телефон</label>
+                <input asp-for="PhoneNumber" class="form-control" placeholder="Въведете телефон" />
+                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+            </div>
 
-                <div class="mb-3">
-                    <label asp-for="Email" class="form-label"></label>
-                    <input asp-for="Email" class="form-control" placeholder="Въведи имейл" type="email" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Имейл</label>
+                <input asp-for="Email" class="form-control" placeholder="Въведете имейл" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
 
-                <button type="submit" class="btn btn-success">Добави</button>
-                <a asp-area="Admin" asp-controller="Dealer" asp-action="All" class="btn btn-secondary ms-2">Отказ</a>
-            </form>
-        </div>
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-success me-2" onclick="document.getElementById('createDealerForm').submit()">
+                    <i class="bi bi-plus-circle"></i> Добави
+                </button>
+                <a asp-area="Admin" asp-controller="Dealer" asp-action="All" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Отказ
+                </a>
+            </div>
+        </form>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function() {
+            // Debug form submission
+            $('#createDealerForm').on('submit', function(e) {
+                console.log('Form submitting...');
+                console.log('Form data:', $(this).serialize());
+            });
+
+            // Clear validation errors on input
+            $('input').on('input', function() {
+                $(this).next('.text-danger').text('');
+            });
+        });
+    </script>
 }

@@ -2,7 +2,7 @@
 using AutoShop.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
+using System;
 using System.Threading.Tasks;
 
 namespace AutoShop.Areas.Admin.Controllers
@@ -17,117 +17,105 @@ namespace AutoShop.Areas.Admin.Controllers
             _context = context;
         }
 
-        // GET: Admin/Dealer/All
         public async Task<IActionResult> All()
         {
             var dealers = await _context.Dealers.ToListAsync();
             return View(dealers);
         }
 
-        // GET: Admin/Dealer/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Admin/Dealer/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Dealer dealer)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                // Временно: Покажи грешките в ModelState в конзолата за дебъгване
-                foreach (var kv in ModelState)
+                if (!ModelState.IsValid)
                 {
-                    foreach (var error in kv.Value.Errors)
+                    foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
                     {
-                        System.Diagnostics.Debug.WriteLine($"Поле: {kv.Key}, Грешка: {error.ErrorMessage}");
+                        Console.WriteLine($"Error: {error.ErrorMessage}");
                     }
+                    return View(dealer);
                 }
 
+                _context.Add(dealer);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Успешно добавихте дилър {dealer.Name}";
+                return RedirectToAction(nameof(All));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Грешка при създаване: {ex.Message}";
                 return View(dealer);
             }
-
-            _context.Add(dealer);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(All));
         }
 
-        // GET: Admin/Dealer/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-                return NotFound();
+            if (id == null) return NotFound();
 
             var dealer = await _context.Dealers.FindAsync(id);
-            if (dealer == null)
-                return NotFound();
+            if (dealer == null) return NotFound();
 
             return View(dealer);
         }
 
-        // POST: Admin/Dealer/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Dealer dealer)
         {
-            if (id != dealer.Id)
-                return NotFound();
-
-            if (!ModelState.IsValid)
-                return View(dealer);
+            if (id != dealer.Id) return NotFound();
 
             try
             {
+                if (!ModelState.IsValid) return View(dealer);
+
                 _context.Update(dealer);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Успешно обновихте {dealer.Name}";
+                return RedirectToAction(nameof(All));
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!DealerExists(dealer.Id))
-                    return NotFound();
-                else
-                    throw;
+                TempData["ErrorMessage"] = $"Грешка при редакция: {ex.Message}";
+                return View(dealer);
             }
-
-            return RedirectToAction(nameof(All));
         }
 
-        // GET: Admin/Dealer/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-                return NotFound();
+            if (id == null) return NotFound();
 
-            var dealer = await _context.Dealers
-                .FirstOrDefaultAsync(d => d.Id == id);
-
-            if (dealer == null)
-                return NotFound();
+            var dealer = await _context.Dealers.FirstOrDefaultAsync(d => d.Id == id);
+            if (dealer == null) return NotFound();
 
             return View(dealer);
         }
 
-        // POST: Admin/Dealer/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var dealer = await _context.Dealers.FindAsync(id);
-
-            if (dealer != null)
+            try
             {
+                var dealer = await _context.Dealers.FindAsync(id);
+                if (dealer == null) return NotFound();
+
                 _context.Dealers.Remove(dealer);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Успешно изтрихте {dealer.Name}";
+                return RedirectToAction(nameof(All));
             }
-
-            return RedirectToAction(nameof(All));
-        }
-
-        private bool DealerExists(int id)
-        {
-            return _context.Dealers.Any(e => e.Id == id);
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Грешка при изтриване: {ex.Message}";
+                return RedirectToAction(nameof(Delete), new { id });
+            }
         }
     }
 }

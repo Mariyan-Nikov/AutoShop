@@ -1,11 +1,13 @@
-﻿namespace AutoShop.Models
+﻿using System.ComponentModel.DataAnnotations;
+namespace AutoShop.Models;
+public class Category
 {
-    public class Category
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public string Name { get; set; } = null!;
+    [Required(ErrorMessage = "Името е задължително")]
+    [StringLength(50, ErrorMessage = "Името трябва да е до 50 символа")]
+    public string Name { get; set; } = null!;
 
-        public string? Description { get; set; }
-    }
+    [StringLength(200, ErrorMessage = "Описанието трябва да е до 200 символа")]
+    public string? Description { get; set; }
 }

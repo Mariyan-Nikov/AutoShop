@@ -1,20 +1,43 @@
 ﻿@model AutoShop.Models.Category
-
 @{
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Изтрий категория";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="card shadow-sm mt-4">
+    <div class="card-body">
+        <h1 class="mb-4">@ViewData["Title"]</h1>
 
-<div class="alert alert-danger mt-4">
-    Сигурни ли сте, че искате да изтриете категорията: <strong>@Model.Name</strong>?
+        <div class="alert alert-danger">
+            Сигурни ли сте, че искате да изтриете: <strong>@Model.Name</strong>?
+            @if (!string.IsNullOrEmpty(Model.Description))
+            {
+                <div class="mt-2"><small>@Model.Description</small></div>
+            }
+        </div>
+
+        <form id="deleteForm" asp-area="Admin" asp-controller="Category" asp-action="DeleteConfirmed" method="post">
+            <input type="hidden" asp-for="Id" />
+            @Html.AntiForgeryToken()
+
+            <div class="d-flex justify-content-start gap-2 mt-4">
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash-fill"></i> Да, изтрий
+                </button>
+                <a asp-action="All" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Отказ
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
 
-<form asp-area="Admin" asp-controller="Category" asp-action="DeleteConfirmed" method="post">
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">
-        <i class="bi bi-trash-fill"></i> Изтрий
-    </button>
-    <a asp-area="Admin" asp-controller="Category" asp-action="All" class="btn btn-secondary ms-2">Отказ</a>
-</form>
+@section Scripts {
+    <script>
+        document.getElementById('deleteForm').addEventListener('submit', function(e) {
+            if (!confirm('Наистина ли искате да изтриете тази категория? Действието е необратимо!')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+}

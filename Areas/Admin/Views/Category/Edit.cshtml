@@ -1,35 +1,42 @@
 ﻿@model AutoShop.Models.Category
-
 @{
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Редактирай категория";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="card shadow-sm mt-4">
+    <div class="card-body">
+        <h1 class="mb-4">@ViewData["Title"]</h1>
 
-<form asp-area="Admin" asp-controller="Category" asp-action="Edit" method="post" class="mt-4">
-    <input type="hidden" asp-for="Id" />
+        <form id="editForm" asp-area="Admin" asp-controller="Category" asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
 
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Име на категорията</label>
+                <input asp-for="Name" class="form-control" placeholder="Въведете име на категорията..." />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Описание</label>
+                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Добавете описание..."></textarea>
+                <span asp-validation-for="Description" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-warning me-2" onclick="document.getElementById('editCategoryForm').submit()">
+                    <i class="bi bi-pencil-square"></i> Актуализирай
+                </button>
+
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='/Admin/Category/All'">
+                    <i class="bi bi-x-circle"></i> Отказ
+                </button>
+            </div>
+        </form>
     </div>
-
-    <div class="mb-3">
-        <label asp-for="Description" class="form-label"></label>
-        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-warning">
-        <i class="bi bi-pencil-square"></i> Актуализирай
-    </button>
-    <a asp-area="Admin" asp-controller="Category" asp-action="All" class="btn btn-secondary ms-2">Отказ</a>
-</form>
+</div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
 }

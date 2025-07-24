@@ -1,19 +1,20 @@
-﻿
-<h1>Cars</h1>
+﻿@model AutoShop.ViewModels.Car.CarQueryModel
+
+<h1>Коли</h1>
 
 <form method="get" asp-action="Index" class="mb-3">
-    <input type="text" name="searchTerm" value="@Model.SearchTerm" placeholder="Search by brand or model" class="form-control" />
-    <button type="submit" class="btn btn-primary mt-2">Search</button>
+    <input type="text" name="searchTerm" value="@Model.SearchTerm" placeholder="Търси по марка или модел" class="form-control" />
+    <button type="submit" class="btn btn-primary mt-2">Търси</button>
 </form>
 
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Brand</th>
-            <th>Model</th>
-            <th>Year</th>
-            <th>Registration Number</th>
-            <th>Actions</th>
+            <th>Марка</th>
+            <th>Модел</th>
+            <th>Година</th>
+            <th>Рег. номер</th>
+            <th>Действия</th>
         </tr>
     </thead>
     <tbody>
@@ -27,9 +28,9 @@
                     <td>@car.Year</td>
                     <td>@car.RegistrationNumber</td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@car.Id" class="btn btn-info btn-sm">Details</a>
-                        <a asp-action="Edit" asp-route-id="@car.Id" class="btn btn-warning btn-sm">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@car.Id" class="btn btn-danger btn-sm">Delete</a>
+                        <a asp-action="Details" asp-route-id="@car.Id" class="btn btn-info btn-sm">Детайли</a>
+                        <a asp-action="Edit" asp-route-id="@car.Id" class="btn btn-warning btn-sm">Редактирай</a>
+                        <a asp-action="Delete" asp-route-id="@car.Id" class="btn btn-danger btn-sm">Изтрий</a>
                     </td>
                 </tr>
             }
@@ -37,7 +38,7 @@
         else
         {
             <tr>
-                <td colspan="5" class="text-center">No cars found.</td>
+                <td colspan="5" class="text-center">Няма намерени коли.</td>
             </tr>
         }
     </tbody>
@@ -45,7 +46,7 @@
 
 @if (Model.TotalPages > 1)
 {
-    <nav aria-label="Page navigation">
+    <nav aria-label="Пагинация">
         <ul class="pagination">
             @for (int i = 1; i <= Model.TotalPages; i++)
             {

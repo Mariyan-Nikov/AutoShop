@@ -1,6 +1,7 @@
 ﻿using AutoShop.ViewModels.Car;
 using System;
 using System.Collections.Generic;
+namespace AutoShop.ViewModels.Car;
 
 public class CarQueryModel
 {

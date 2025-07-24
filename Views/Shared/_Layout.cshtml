@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +13,6 @@
     <link rel="stylesheet" href="~/AutoShop.styles.css" asp-append-version="true" />
 
     <style>
-        /* Тъмен режим */
         .dark-theme {
             background-color: #121212 !important;
             color: #e0e0e0 !important;
@@ -64,8 +64,8 @@
             border: none;
             background: none;
             color: inherit;
-            font-size: 1.6rem; /* увеличен размер за по-добра видимост */
-            padding: 8px 12px; /* повече padding за по-лесно натискане */
+            font-size: 1.6rem;
+            padding: 8px 12px;
             border-radius: 6px;
             cursor: pointer;
         }
@@ -100,7 +100,6 @@
                             </li>
                         }
 
-                        <!-- Drop-down меню за Cars -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark @(ViewContext.RouteData.Values["controller"]?.ToString() == "Car" ? "active" : "")"
                                href="#" id="carsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -110,13 +109,18 @@
                                 <li>
                                     <a class="dropdown-item" asp-controller="Car" asp-action="Index">List Cars</a>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item" asp-controller="Car" asp-action="Create">Add New Car</a>
-                                </li>
-                                <li><hr class="dropdown-divider" /></li>
-                                <li>
+
+                                @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator"))
+                                {
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Car" asp-action="Create">Add New Car</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                }
+
+                                @* <li>
                                     <a class="dropdown-item" asp-controller="Car" asp-action="All">Search Cars</a>
-                                </li>
+                                </li> *@
                             </ul>
                         </li>
                     </ul>

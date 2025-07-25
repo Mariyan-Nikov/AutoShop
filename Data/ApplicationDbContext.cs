@@ -1,4 +1,5 @@
-﻿using AutoShop.Models;
+﻿using AutoShop.Data.Entities;
+using AutoShop.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +18,7 @@ namespace AutoShop.Data
         public DbSet<Review> Reviews { get; set; } = null!;
         public DbSet<Dealer> Dealers { get; set; }
         public DbSet<Category> Categories { get; set; } = null!;
-
+        public DbSet<Setting> Settings { get; set; } = null!;
 
     }
 }

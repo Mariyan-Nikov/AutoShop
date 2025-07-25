@@ -1,50 +1,90 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
+﻿using AutoShop.Data;
+using AutoShop.Data.Entities;
+using AutoShop.ViewModels.Settings;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AutoShop.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class SettingsController : Controller
     {
-        // GET: /Admin/Settings
-        public IActionResult Index()
+        private readonly ApplicationDbContext _context;
+
+        public SettingsController(ApplicationDbContext context)
         {
-            // Примерни настройки, можеш да ги замениш с реални от база или config
+            _context = context;
+        }
+
+        // GET: /Admin/Settings
+        public async Task<IActionResult> Index()
+        {
+            var settings = await _context.Settings.ToListAsync();
+
             var model = new SettingsViewModel
             {
-                SiteName = "AutoShop",
-                ItemsPerPage = 10,
-                EnableNotifications = true
+                ItemsPerPage = GetIntSetting(settings, "ItemsPerPage", 10),
+                EnableNotifications = GetBoolSetting(settings, "EnableNotifications", true)
             };
+
             return View(model);
         }
 
         // POST: /Admin/Settings
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index(SettingsViewModel model)
+        public async Task<IActionResult> Index(SettingsViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            // Тук можеш да запишеш настройките (например в база или файл)
-            // За сега просто връщаме обратно на страницата
+            await SetSetting("ItemsPerPage", model.ItemsPerPage.ToString());
+            await SetSetting("EnableNotifications", model.EnableNotifications.ToString());
+
+            await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Настройките са запазени успешно.";
-            return View(model);
+            return RedirectToAction(nameof(Index));
         }
-    }
 
-    public class SettingsViewModel
-    {
-        [Required]
-        public string SiteName { get; set; } = null!;
+        private int GetIntSetting(List<Setting> settings, string key, int defaultValue)
+        {
+            var setting = settings.FirstOrDefault(s => s.Key == key);
+            if (setting != null && int.TryParse(setting.Value, out int val))
+            {
+                return val;
+            }
+            return defaultValue;
+        }
 
-        [Range(1, 100)]
-        public int ItemsPerPage { get; set; }
+        private bool GetBoolSetting(List<Setting> settings, string key, bool defaultValue)
+        {
+            var setting = settings.FirstOrDefault(s => s.Key == key);
+            if (setting != null && bool.TryParse(setting.Value, out bool val))
+            {
+                return val;
+            }
+            return defaultValue;
+        }
 
-        public bool EnableNotifications { get; set; }
+        private async Task SetSetting(string key, string value)
+        {
+            var setting = await _context.Settings.FirstOrDefaultAsync(s => s.Key == key);
+            if (setting == null)
+            {
+                setting = new Setting { Key = key, Value = value };
+                await _context.Settings.AddAsync(setting);
+            }
+            else
+            {
+                setting.Value = value;
+                _context.Settings.Update(setting);
+            }
+        }
     }
 }

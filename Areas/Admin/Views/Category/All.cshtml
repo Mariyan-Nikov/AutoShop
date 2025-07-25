@@ -12,7 +12,7 @@
     </a>
 </div>
 
-<table class="table table-bordered table-striped table-hover align-middle">
+<table class="table table-bordered table-striped table-hover align-middle" id="categoriesTable">
     <thead class="table-dark">
         <tr>
             <th style="width: 10%;">ID</th>
@@ -32,7 +32,7 @@
         {
             foreach (var category in Model)
             {
-                <tr>
+                <tr data-id="@category.Id">
                     <td>@category.Id</td>
                     <td>@category.Name</td>
                     <td>@category.Description</td>
@@ -40,14 +40,43 @@
                         <a href="/Admin/Category/Edit/@category.Id" class="btn btn-sm btn-warning me-1" title="Редактирай">
                             <i class="bi bi-pencil-square"></i>
                         </a>
-
-                        <a asp-area="Admin" asp-controller="Category" asp-action="Delete" asp-route-id="@category.Id" class="btn btn-sm btn-danger" title="Изтрий"
-                           onclick="return confirm('Сигурни ли сте, че искате да изтриете тази категория?');">
+                        <button class="btn btn-sm btn-danger btn-delete" data-id="@category.Id" title="Изтрий">
                             <i class="bi bi-trash-fill"></i>
-                        </a>
+                        </button>
                     </td>
                 </tr>
             }
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.btn-delete').click(function () {
+                var button = $(this);
+                var categoryId = button.data('id');
+
+                $.ajax({
+                    url: '@Url.Action("Delete", "Category", new { area = "Admin" })',
+                    type: 'POST',
+                    data: { id: categoryId },
+                    success: function (response) {
+                        if (response.success) {
+                            // Премахваме реда от таблицата
+                            button.closest('tr').remove();
+                            alert(response.message);
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('Грешка при опит за изтриване на категорията.');
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -31,6 +31,8 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IDealerService, DealerService>();
+
 
 
 // 5. Добавяне на MVC и Razor Pages

@@ -6,18 +6,20 @@ namespace AutoShop.Models
     {
         public int Id { get; set; }
 
-        [Required]
-        [StringLength(100)]
+        [Required(ErrorMessage = "Името е задължително")]
+        [StringLength(100, ErrorMessage = "Името трябва да е до 100 символа")]
         public string Name { get; set; }
 
-        [Required]
-        [StringLength(200)]
+        [Required(ErrorMessage = "Адресът е задължителен")]
+        [StringLength(200, ErrorMessage = "Адресът трябва да е до 200 символа")]
         public string Address { get; set; }
 
-        [Phone]
+        [Required(ErrorMessage = "Телефонният номер е задължителен")]
+        [Phone(ErrorMessage = "Невалиден телефонен номер")]
         public string PhoneNumber { get; set; }
 
-        [EmailAddress]
+        [Required(ErrorMessage = "Имейлът е задължителен")]
+        [EmailAddress(ErrorMessage = "Невалиден имейл адрес")]
         public string Email { get; set; }
     }
 }

@@ -1,46 +1,51 @@
 ﻿@model AutoShop.Models.Dealer
+
 @{
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Добавяне на нов дилър";
 }
 
-<div class="card shadow-sm mt-4">
+<div class="card shadow-sm mt-5 mx-auto" style="max-width: 600px;">
     <div class="card-body">
-        <h1 class="mb-4">@ViewData["Title"]</h1>
+        <h2 class="card-title mb-4 text-center">@ViewData["Title"]</h2>
 
-        <form id="createDealerForm" asp-area="Admin" asp-controller="Dealer" asp-action="Create" method="post">
+        <!-- Тази форма ще се изпраща по стандартен HTTP POST метод. -->
+        <!-- Браузърът ще извърши пълно презареждане на страницата при изпращане. -->
+        <form asp-area="Admin" asp-controller="Dealer" asp-action="Create" method="post" novalidate>
             @Html.AntiForgeryToken()
 
             <div class="mb-3">
-                <label asp-for="Name" class="form-label">Име на дилър</label>
-                <input asp-for="Name" class="form-control" placeholder="Въведете име" />
+                <label asp-for="Name" class="form-label">Име</label>
+                <input asp-for="Name" class="form-control" placeholder="Име на дилър" />
+                <!-- asp-validation-for таг хелперът автоматично показва съобщенията за грешки -->
+                <!-- от ModelState при сървърна валидация или от jQuery Validation при клиентска. -->
                 <span asp-validation-for="Name" class="text-danger small"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Address" class="form-label">Адрес</label>
-                <input asp-for="Address" class="form-control" placeholder="Въведете адрес" />
+                <input asp-for="Address" class="form-control" placeholder="Адрес на дилъра" />
                 <span asp-validation-for="Address" class="text-danger small"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="PhoneNumber" class="form-label">Телефон</label>
-                <input asp-for="PhoneNumber" class="form-control" placeholder="Въведете телефон" />
+                <input asp-for="PhoneNumber" class="form-control" placeholder="Телефон за контакт" />
                 <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Email" class="form-label">Имейл</label>
-                <input asp-for="Email" class="form-control" placeholder="Въведете имейл" />
+                <input asp-for="Email" class="form-control" placeholder="Имейл адрес" />
                 <span asp-validation-for="Email" class="text-danger small"></span>
             </div>
 
-            <div class="d-flex justify-content-start">
-                <button type="submit" class="btn btn-success me-2" onclick="document.getElementById('createDealerForm').submit()">
-                    <i class="bi bi-plus-circle"></i> Добави
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Създай
                 </button>
                 <a asp-area="Admin" asp-controller="Dealer" asp-action="All" class="btn btn-secondary">
-                    <i class="bi bi-x-circle"></i> Отказ
+                    <i class="bi bi-arrow-left-circle"></i> Назад
                 </a>
             </div>
         </form>
@@ -48,20 +53,14 @@
 </div>
 
 @section Scripts {
+    <!-- Този частичен изглед зарежда всички необходими JavaScript файлове -->
+    <!-- за клиентска (unobtrusive) валидация на формата (jQuery, jQuery Validate, jQuery Unobtrusive Validation). -->
     <partial name="_ValidationScriptsPartial" />
 
-    <script>
-        $(document).ready(function() {
-            // Debug form submission
-            $('#createDealerForm').on('submit', function(e) {
-                console.log('Form submitting...');
-                console.log('Form data:', $(this).serialize());
-            });
-
-            // Clear validation errors on input
-            $('input').on('input', function() {
-                $(this).next('.text-danger').text('');
-            });
-        });
-    </script>
+    <!--
+        ***ВНИМАНИЕ: Уверете се, че НЯМА НИКАКЪВ ДРУГ JavaScript КОД ТУК!***
+        Всеки скрипт блок, който прихваща submit събитието на формата
+        (напр. $('#createDealerForm').submit(function (e) { e.preventDefault(); ... }))
+        ще блокира стандартното изпращане на формата и ще причини поведението, което описвате.
+    -->
 }

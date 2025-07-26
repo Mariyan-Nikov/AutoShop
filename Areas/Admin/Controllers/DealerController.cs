@@ -1,177 +1,114 @@
-﻿using AutoShop.Data;
-using AutoShop.Models;
+﻿using AutoShop.Models;
+using AutoShop.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq; // Added for any LINQ operations if needed
+using System.Linq;
 using System.Threading.Tasks;
-
-using AutoShop.Services.Interfaces; // Important: Add this using
 
 namespace AutoShop.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class DealerController : Controller
     {
-        private readonly IDealerService _dealerService; // Injecting the service interface
+        private readonly IDealerService _dealerService;
 
         public DealerController(IDealerService dealerService)
         {
             _dealerService = dealerService;
         }
 
-        /// <summary>
-        /// Displays a list of all dealers.
-        /// </summary>
+        // GET: /Admin/Dealer/All
         public async Task<IActionResult> All()
         {
             var dealers = await _dealerService.GetAllDealersAsync();
             return View(dealers);
         }
 
-        /// <summary>
-        /// Displays the form for creating a new dealer.
-        /// </summary>
-        [HttpGet] // Explicitly marking as GET request
+        // GET: /Admin/Dealer/Create
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        /// <summary>
-        /// Handles the POST request for creating a new dealer.
-        /// Uses standard HTTP POST (not AJAX).
-        /// </summary>
-        /// <param name="dealer">The data for the new dealer submitted from the form.</param>
-        /// <returns>Returns the View with validation errors if invalid, or redirects to the dealer list on success.</returns>
+        // POST: /Admin/Dealer/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Dealer dealer)
         {
-            // Checks if the submitted data is valid according to the Dealer model's data annotations.
             if (!ModelState.IsValid)
             {
-                // If the model is not valid, returns the same view (Create.cshtml).
-                // Validation messages will be automatically displayed on the page.
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    var errors = ModelState
+                        .Where(x => x.Value.Errors.Count > 0)
+                        .Select(x => new
+                        {
+                            Key = x.Key,
+                            Errors = x.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                        });
+
+                    return BadRequest(errors);
+                }
+
                 return View(dealer);
             }
 
-            // If validation is successful, adds the dealer via the service.
             await _dealerService.AddDealerAsync(dealer);
 
-            // Sets a success message in TempData, which can be displayed after redirection.
-            TempData["SuccessMessage"] = $"Дилър '{dealer.Name}' е добавен успешно!";
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new { success = true, message = "Дилърът е създаден успешно!" });
+            }
 
-            // Redirects the browser to the page showing all dealers.
-            // This causes a full page reload.
+            TempData["SuccessMessage"] = "Дилърът е създаден успешно!";
             return RedirectToAction(nameof(All));
         }
-
-        /// <summary>
-        /// Displays the form for editing an existing dealer.
-        /// </summary>
-        [HttpGet]
-        public async Task<IActionResult> Edit(int id)
+        // POST: /Admin/Dealer/Delete/5
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
         {
             var dealer = await _dealerService.GetDealerByIdAsync(id);
             if (dealer == null)
             {
-                return NotFound("Дилърът не е намерен.");
+                return Json(new { success = false, message = "Дилърът не беше намерен." });
             }
-            return View(dealer);
+
+            await _dealerService.DeleteDealerAsync(id);
+            return Json(new { success = true, message = $"Дилърът '{dealer.Name}' беше изтрит." });
         }
 
-        /// <summary>
-        /// Handles the POST request for editing a dealer. (Designed for AJAX submission)
-        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Dealer dealer)
+        public async Task<IActionResult> Edit(Dealer model)
         {
-            // Check if IDs match for security
-            if (id != dealer.Id)
-            {
-                ModelState.AddModelError("", "Несъответствие в ID на дилъра.");
-            }
-
             if (!ModelState.IsValid)
             {
-                // Collect all validation errors in JSON format
                 var errors = ModelState
                     .Where(x => x.Value.Errors.Count > 0)
-                    .ToDictionary(
-                        kvp => kvp.Key, // Key is the field name (e.g., "Name", "Email")
-                        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
-                    );
-                // Return 400 Bad Request with the errors
-                return BadRequest(new { success = false, errors = errors });
+                    .Select(x => new
+                    {
+                        Key = x.Key,
+                        Errors = x.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                    });
+
+                return BadRequest(errors);
             }
 
-            try
+            var existing = await _dealerService.GetDealerByIdAsync(model.Id);
+            if (existing == null)
             {
-                var existingDealer = await _dealerService.GetDealerByIdAsync(id);
-                if (existingDealer == null)
-                {
-                    // Return 404 Not Found with a JSON message
-                    return NotFound(new { success = false, message = "Дилърът не съществува." });
-                }
-
-                // Update the properties of the existing object
-                existingDealer.Name = dealer.Name;
-                existingDealer.Address = dealer.Address;
-                existingDealer.PhoneNumber = dealer.PhoneNumber;
-                existingDealer.Email = dealer.Email;
-
-                await _dealerService.UpdateDealerAsync(existingDealer);
-
-                // Return 200 OK with a JSON success message
-                return Ok(new { success = true, message = $"Дилър '{existingDealer.Name}' е обновен успешно." });
+                return NotFound(new { message = "Дилърът не съществува." });
             }
-            catch (Exception ex)
-            {
-                // Return 500 Internal Server Error with a JSON error message
-                return StatusCode(500, new { success = false, message = $"Възникна грешка при обновяване на дилъра: {ex.Message}" });
-            }
-        }
 
-        /// <summary>
-        /// Displays the confirmation page for deleting a dealer.
-        /// </summary>
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null) return NotFound();
+            existing.Name = model.Name;
+            existing.Address = model.Address;
+            existing.PhoneNumber = model.PhoneNumber;
+            existing.Email = model.Email;
 
-            var dealer = await _dealerService.GetDealerByIdAsync(id.Value);
-            if (dealer == null) return NotFound();
+            await _dealerService.UpdateDealerAsync(existing);
 
-            return View(dealer);
-        }
-
-        /// <summary>
-        /// Handles the POST request for confirmed dealer deletion. (Designed for AJAX submission)
-        /// </summary>
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            try
-            {
-                var dealer = await _dealerService.GetDealerByIdAsync(id);
-                if (dealer == null)
-                {
-                    // Return JSON response if dealer not found
-                    return Json(new { success = false, message = "Дилърът не беше намерен за изтриване." });
-                }
-
-                await _dealerService.DeleteDealerAsync(id);
-                // Return JSON response for success
-                return Json(new { success = true, message = $"Успешно изтрихте {dealer.Name}" });
-            }
-            catch (Exception ex)
-            {
-                // Return JSON response for error
-                return StatusCode(500, Json(new { success = false, message = $"Грешка при изтриване на дилър: {ex.Message}" }));
-            }
+            // Връщаме JSON с команда за пренасочване
+            return Ok(new { redirectUrl = Url.Action("All", "Dealer", new { area = "Admin" }) });
         }
     }
 }

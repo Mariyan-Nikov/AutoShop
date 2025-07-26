@@ -5,16 +5,17 @@ using System.Threading.Tasks;
 
 namespace AutoShop.Controllers
 {
-    public class CarController : Controller
+    public class CarTestController : Controller
     {
         private readonly ICarService _carService;
 
-        public CarController(ICarService carService)
+        // Конструкторът трябва да е с името на класа!
+        public CarTestController(ICarService carService)
         {
             _carService = carService;
         }
 
-        // GET: /Car/Index
+        // GET: /CarTest/Index
         public async Task<IActionResult> Index(string? searchTerm, int page = 1)
         {
             const int CarsPerPage = 10;
@@ -24,7 +25,7 @@ namespace AutoShop.Controllers
             return View(model);
         }
 
-        // GET: /Car/Details/5
+        // GET: /CarTest/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var car = await _carService.GetCarByIdAsync(id);
@@ -37,13 +38,13 @@ namespace AutoShop.Controllers
             return View(car);
         }
 
-        // GET: /Car/Create
+        // GET: /CarTest/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: /Car/Create
+        // POST: /CarTest/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Car car)
@@ -57,7 +58,7 @@ namespace AutoShop.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /Car/Edit/5
+        // GET: /CarTest/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             var car = await _carService.GetCarByIdAsync(id);
@@ -69,7 +70,7 @@ namespace AutoShop.Controllers
             return View(car);
         }
 
-        // POST: /Car/Edit/5
+        // POST: /CarTest/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Car car)
@@ -88,7 +89,7 @@ namespace AutoShop.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /Car/Delete/5
+        // GET: /CarTest/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             var car = await _carService.GetCarByIdAsync(id);
@@ -100,7 +101,7 @@ namespace AutoShop.Controllers
             return View(car);
         }
 
-        // POST: /Car/Delete/5
+        // POST: /CarTest/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

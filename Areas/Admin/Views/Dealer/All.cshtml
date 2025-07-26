@@ -4,12 +4,12 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Всички дилъри";
 }
+
 <a href="/Admin/Dealer/Create" class="btn btn-primary mb-3">Добави нов дилър</a>
 
 <h1>@ViewData["Title"]</h1>
 
-
-<table class="table table-bordered table-striped">
+<table class="table table-bordered table-striped" id="dealersTable">
     <thead class="table-dark">
         <tr>
             <th>Име</th>
@@ -22,16 +22,50 @@
     <tbody>
         @foreach (var dealer in Model)
         {
-            <tr>
+            <tr data-id="@dealer.Id">
                 <td>@dealer.Name</td>
                 <td>@dealer.Address</td>
                 <td>@dealer.PhoneNumber</td>
                 <td>@dealer.Email</td>
                 <td>
                     <a asp-area="Admin" asp-controller="Dealer" asp-action="Edit" asp-route-id="@dealer.Id" class="btn btn-warning btn-sm me-1">Редактирай</a>
-                    <a asp-area="Admin" asp-controller="Dealer" asp-action="Delete" asp-route-id="@dealer.Id" class="btn btn-danger btn-sm">Изтрий</a>
+                    <button type="button" class="btn btn-danger btn-sm btn-delete" data-id="@dealer.Id">Изтрий</button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".btn-delete").click(function () {
+                if (!confirm("Сигурни ли сте, че искате да изтриете този дилър?")) {
+                    return;
+                }
+
+                var button = $(this);
+                var dealerId = button.data("id");
+
+                $.ajax({
+                    url: '@Url.Action("Delete", "Dealer", new { area = "Admin" })/' + dealerId,
+                    type: 'POST',
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function () {
+                        // Премахни реда от таблицата
+                        button.closest("tr").remove();
+                    },
+                    error: function () {
+                        alert("Възникна грешка при изтриване. Опитайте пак.");
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- Добави AntiForgeryToken в скрито поле, за да може да се вземе от jQuery -->
+    @Html.AntiForgeryToken()
+}

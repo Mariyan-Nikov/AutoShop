@@ -1,117 +1,262 @@
-﻿using AutoShop.Models;
+﻿using AutoShop.Controllers;
+using AutoShop.Models;
 using AutoShop.Services.Interfaces;
+using AutoShop.ViewModels.OrderDocument;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Moq;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xunit;
 
-
-public class OrderController : Controller
+public class OrderControllerTests
 {
-    private readonly IOrderService _orderService;
-    private readonly ICustomerService _customerService;
+    private readonly Mock<IOrderService> _orderServiceMock;
+    private readonly OrderController _controller;
 
-    public OrderController(IOrderService orderService, ICustomerService customerService)
+    public OrderControllerTests()
     {
-        _orderService = orderService;
-        _customerService = customerService;
+        _orderServiceMock = new Mock<IOrderService>();
+        _controller = new OrderController(_orderServiceMock.Object);
+
+        // Setup TempData, за да избегнем NullReferenceException
+        var tempData = new TempDataDictionary(
+            new DefaultHttpContext(),
+            Mock.Of<ITempDataProvider>());
+        _controller.TempData = tempData;
     }
 
-    public async Task<IActionResult> Index()
+    [Fact]
+    public async Task Index_ReturnsViewWithOrders()
     {
-        var orders = await _orderService.GetAllAsync();
-        return View(orders);
+        // Arrange
+        var orders = new List<Order> { new Order { Id = 1 }, new Order { Id = 2 } };
+        _orderServiceMock.Setup(s => s.GetAllAsync()).ReturnsAsync(orders);
+
+        // Act
+        var result = await _controller.Index();
+
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsAssignableFrom<IEnumerable<Order>>(viewResult.Model);
+        Assert.Equal(2, ((List<Order>)model).Count);
     }
 
-    public async Task<IActionResult> Create()
+    [Fact]
+    public void Create_Get_ReturnsView()
     {
-        var customers = await _customerService.GetAllCustomersAsync();
-        ViewData["Customers"] = new SelectList(customers, "Id", "FullName");
-        return View();
+        // Act
+        var result = _controller.Create();
+
+        // Assert
+        Assert.IsType<ViewResult>(result);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Order order)
+    [Fact]
+    public async Task Create_Post_InvalidModel_ReturnsViewWithModel()
     {
-        if (ModelState.IsValid)
-        {
-            await _orderService.AddOrderAsync(order);
-            return RedirectToAction(nameof(Index));
-        }
+        // Arrange
+        _controller.ModelState.AddModelError("Test", "Error");
+        var order = new Order();
 
-        var customers = await _customerService.GetAllCustomersAsync();
-        ViewData["Customers"] = new SelectList(customers, "Id", "FullName", order.CustomerId);
-        return View(order);
+        // Act
+        var result = await _controller.Create(order);
+
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.Equal(order, viewResult.Model);
     }
 
-    public async Task<IActionResult> Edit(int? id)
+    [Fact]
+    public async Task Create_Post_ValidModel_CallsAddOrderAndRedirects()
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        // Arrange
+        var order = new Order();
 
-        var order = await _orderService.GetOrderByIdAsync(id.Value);
-        if (order == null)
-        {
-            return NotFound();
-        }
+        // Act
+        var result = await _controller.Create(order);
 
-        var customers = await _customerService.GetAllCustomersAsync();
-        ViewData["Customers"] = new SelectList(customers, "Id", "FullName", order.CustomerId);
-
-        return View(order);
+        // Assert
+        _orderServiceMock.Verify(s => s.AddOrderAsync(order), Times.Once);
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal(nameof(OrderController.Index), redirect.ActionName);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Order order)
+    [Fact]
+    public async Task Edit_Get_NullId_ReturnsNotFound()
     {
-        if (id != order.Id)
-        {
-            return NotFound();
-        }
+        // Act
+        var result = await _controller.Edit(null);
 
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                await _orderService.UpdateOrderAsync(order);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            return RedirectToAction(nameof(Index));
-        }
-
-        var customers = await _customerService.GetAllCustomersAsync();
-        ViewData["Customers"] = new SelectList(customers, "Id", "FullName", order.CustomerId);
-        return View(order);
+        // Assert
+        Assert.IsType<NotFoundResult>(result);
     }
 
-    public async Task<IActionResult> Delete(int? id)
+    [Fact]
+    public async Task Edit_Get_OrderNotFound_ReturnsNotFound()
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        // Arrange
+        _orderServiceMock.Setup(s => s.GetOrderByIdAsync(It.IsAny<int>())).ReturnsAsync((Order)null);
 
-        var order = await _orderService.GetOrderByIdAsync(id.Value);
-        if (order == null)
-        {
-            return NotFound();
-        }
+        // Act
+        var result = await _controller.Edit(1);
 
-        return View(order);
+        // Assert
+        Assert.IsType<NotFoundResult>(result);
     }
 
-    [HttpPost, ActionName("DeleteConfirmed")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    [Fact]
+    public async Task Edit_Get_OrderFound_ReturnsViewWithModel()
     {
-        await _orderService.DeleteOrderAsync(id);
-        return RedirectToAction(nameof(Index));
+        // Arrange
+        var order = new Order { Id = 1 };
+        _orderServiceMock.Setup(s => s.GetOrderByIdAsync(1)).ReturnsAsync(order);
+
+        // Act
+        var result = await _controller.Edit(1);
+
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.Equal(order, viewResult.Model);
+    }
+
+    [Fact]
+    public async Task Edit_Post_IdMismatch_ReturnsNotFound()
+    {
+        // Arrange
+        var order = new Order { Id = 2 };
+
+        // Act
+        var result = await _controller.Edit(1, order);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    [Fact]
+    public async Task Edit_Post_InvalidModel_ReturnsViewWithModel()
+    {
+        // Arrange
+        var order = new Order { Id = 1 };
+        _controller.ModelState.AddModelError("Test", "Error");
+
+        // Act
+        var result = await _controller.Edit(1, order);
+
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.Equal(order, viewResult.Model);
+    }
+
+    [Fact]
+    public async Task Edit_Post_ValidModel_UpdatesAndRedirects()
+    {
+        // Arrange
+        var order = new Order { Id = 1 };
+
+        // Act
+        var result = await _controller.Edit(1, order);
+
+        // Assert
+        _orderServiceMock.Verify(s => s.UpdateOrderAsync(order), Times.Once);
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal(nameof(OrderController.Index), redirect.ActionName);
+    }
+
+    [Fact]
+    public async Task Delete_Get_NullId_ReturnsNotFound()
+    {
+        // Act
+        var result = await _controller.Delete(null);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    [Fact]
+    public async Task Delete_Get_OrderNotFound_ReturnsNotFound()
+    {
+        // Arrange
+        _orderServiceMock.Setup(s => s.GetOrderByIdAsync(It.IsAny<int>())).ReturnsAsync((Order)null);
+
+        // Act
+        var result = await _controller.Delete(1);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    [Fact]
+    public async Task Delete_Get_OrderFound_ReturnsViewWithModel()
+    {
+        // Arrange
+        var order = new Order { Id = 1 };
+        _orderServiceMock.Setup(s => s.GetOrderByIdAsync(1)).ReturnsAsync(order);
+
+        // Act
+        var result = await _controller.Delete(1);
+
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.Equal(order, viewResult.Model);
+    }
+
+    [Fact]
+    public async Task DeleteConfirmed_DeletesAndRedirects()
+    {
+        // Act
+        var result = await _controller.DeleteConfirmed(1);
+
+        // Assert
+        _orderServiceMock.Verify(s => s.DeleteOrderAsync(1), Times.Once);
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal(nameof(OrderController.Index), redirect.ActionName);
+    }
+
+    [Fact]
+    public void OrderDocumentGet_ReturnsViewWithModel()
+    {
+        // Act
+        var result = _controller.OrderDocumentGet(5);
+
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsType<OrderDocumentViewModel>(viewResult.Model);
+        Assert.Equal(5, model.CarId);
+    }
+
+    [Fact]
+    public void OrderDocumentPost_InvalidModel_ReturnsViewWithModel()
+    {
+        // Arrange
+        var model = new OrderDocumentViewModel();
+        _controller.ModelState.AddModelError("Test", "Error");
+
+        // Act
+        var result = _controller.OrderDocumentPost(model);
+
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.Equal(model, viewResult.Model);
+    }
+
+    [Fact]
+    public void OrderDocumentPost_ValidModel_SetsTempDataAndRedirects()
+    {
+        // Arrange
+        var model = new OrderDocumentViewModel();
+
+        // TempData е вече настроено в конструктора
+
+        // Act
+        var result = _controller.OrderDocumentPost(model);
+
+        // Assert
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirect.ActionName);
+        Assert.Equal("Home", redirect.ControllerName);
+        Assert.True(_controller.TempData.ContainsKey("Message"));
     }
 }

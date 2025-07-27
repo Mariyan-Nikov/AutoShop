@@ -10,7 +10,6 @@
 <table class="table table-striped align-middle text-center">
     <thead class="table-dark">
         <tr>
-            <th>Снимка</th>
             <th>Марка</th>
             <th>Модел</th>
             <th>Година</th>
@@ -24,24 +23,17 @@
             foreach (var car in Model.Cars)
             {
                 <tr>
-                    <td>
-                        @if (!string.IsNullOrEmpty(car.ImageFileName))
-                        {
-                            <img src="~/images/@car.ImageFileName" alt="Car Image" width="100" class="img-thumbnail shadow-sm" />
-                        }
-                        else
-                        {
-                            <span class="text-muted">Няма снимка</span>
-                        }
-                    </td>
                     <td>@car.Brand</td>
                     <td>@car.Model</td>
                     <td>@car.Year</td>
                     <td>@car.RegistrationNumber</td>
                     <td>
                         <a asp-action="Details" asp-route-id="@car.Id" class="btn btn-info btn-sm">Детайли</a>
-                        <a asp-action="Edit" asp-route-id="@car.Id" class="btn btn-warning btn-sm">Редактирай</a>
-                        <a asp-action="Delete" asp-route-id="@car.Id" class="btn btn-danger btn-sm">Изтрий</a>
+                        @if (User.IsInRole("Administrator"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@car.Id" class="btn btn-warning btn-sm">Редактирай</a>
+                            <a asp-action="Delete" asp-route-id="@car.Id" class="btn btn-danger btn-sm">Изтрий</a>
+                        }
                     </td>
                 </tr>
             }
@@ -49,7 +41,7 @@
         else
         {
             <tr>
-                <td colspan="6" class="text-center">Няма намерени коли.</td>
+                <td colspan="5" class="text-center">Няма намерени коли.</td>
             </tr>
         }
     </tbody>

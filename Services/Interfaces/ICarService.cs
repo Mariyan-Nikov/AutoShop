@@ -18,5 +18,7 @@ namespace AutoShop.Services.Interfaces
 
         // ✅ Нов overload за извикване без параметри
         Task<IEnumerable<CarViewModel>> GetAllAsync();
+
+
     }
 }

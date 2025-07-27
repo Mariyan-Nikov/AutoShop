@@ -1,0 +1,46 @@
+﻿@model AutoShop.ViewModels.OrderDocument.OrderDocumentViewModel
+@{
+    ViewData["Title"] = "Запитване за кола";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="OrderDocument" method="post">
+    <input type="hidden" asp-for="CarId" />
+
+    <div class="form-group">
+        <label asp-for="FullName">Име</label>
+        <input asp-for="FullName" class="form-control" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PhoneNumber">Телефонен номер</label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email">Имейл</label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PreferredDate">Предпочитана дата за среща</label>
+        <input asp-for="PreferredDate" class="form-control" type="date" />
+        <span asp-validation-for="PreferredDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Message">Съобщение / бележки</label>
+        <textarea asp-for="Message" class="form-control"></textarea>
+        <span asp-validation-for="Message" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Изпрати запитване</button>
+</form>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

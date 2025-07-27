@@ -102,6 +102,7 @@ namespace AutoShop.Services
                 TotalCars = totalCars,
                 CarsPerPage = carsPerPage
             };
+
         }
     }
 }

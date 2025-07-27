@@ -1,0 +1,36 @@
+﻿@model IEnumerable<AutoShop.ViewModels.OrderDocument.OrderDocumentViewModel>
+
+@{
+    ViewData["Title"] = "Заявки за коли";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Кола (ID)</th>
+            <th>Име</th>
+            <th>Телефон</th>
+            <th>Имейл</th>
+            <th>Предпочитана дата</th>
+            <th>Съобщение</th>
+            <th>Дата на заявката</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model)
+        {
+            <tr>
+                <td>@request.CarId</td>
+                <td>@request.FullName</td>
+                <td>@request.PhoneNumber</td>
+                <td>@request.Email</td>
+                <td>@request.PreferredDate.ToString("dd.MM.yyyy")</td>
+                <td>@request.Message</td>
+                <td>@request.CreatedOn.ToString("dd.MM.yyyy HH:mm")</td>
+            </tr>
+        }
+    </tbody>
+</table>

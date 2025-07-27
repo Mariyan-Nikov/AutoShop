@@ -51,7 +51,6 @@ namespace AutoShop.Controllers
             {
                 string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
 
-                // Създаване на директория, ако липсва
                 if (!Directory.Exists(uploadsFolder))
                     Directory.CreateDirectory(uploadsFolder);
 
@@ -81,10 +80,28 @@ namespace AutoShop.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Car car)
+        public async Task<IActionResult> Edit(Car car, IFormFile imageFile)
         {
             if (!ModelState.IsValid)
                 return View(car);
+
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                string filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(fileStream);
+                }
+
+                car.ImageFileName = fileName;
+            }
 
             await _carService.UpdateCarAsync(car);
             return RedirectToAction(nameof(Index));

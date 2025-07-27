@@ -1,7 +1,7 @@
 ﻿using AutoShop.Models;
 using AutoShop.Services.Interfaces;
+using AutoShop.ViewModels.OrderDocument;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Threading.Tasks;
 
@@ -10,12 +10,10 @@ namespace AutoShop.Controllers
     public class OrderController : Controller
     {
         private readonly IOrderService _orderService;
-        private readonly ICustomerService _customerService;
 
-        public OrderController(IOrderService orderService, ICustomerService customerService)
+        public OrderController(IOrderService orderService)
         {
             _orderService = orderService;
-            _customerService = customerService;
         }
 
         public async Task<IActionResult> Index()
@@ -24,10 +22,8 @@ namespace AutoShop.Controllers
             return View(orders);
         }
 
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            var customers = await _customerService.GetAllCustomersAsync();
-            ViewBag.Customers = new SelectList(customers, "Id", "Name");
             return View();
         }
 
@@ -37,8 +33,6 @@ namespace AutoShop.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var customers = await _customerService.GetAllCustomersAsync();
-                ViewBag.Customers = new SelectList(customers, "Id", "Name", order.CustomerId);
                 return View(order);
             }
 
@@ -53,9 +47,6 @@ namespace AutoShop.Controllers
             var order = await _orderService.GetOrderByIdAsync(id.Value);
             if (order == null) return NotFound();
 
-            var customers = await _customerService.GetAllCustomersAsync();
-            ViewBag.Customers = new SelectList(customers, "Id", "Name", order.CustomerId);
-
             return View(order);
         }
 
@@ -67,8 +58,6 @@ namespace AutoShop.Controllers
 
             if (!ModelState.IsValid)
             {
-                var customers = await _customerService.GetAllCustomersAsync();
-                ViewBag.Customers = new SelectList(customers, "Id", "Name", order.CustomerId);
                 return View(order);
             }
 
@@ -79,7 +68,7 @@ namespace AutoShop.Controllers
             }
             catch (Exception)
             {
-                // Log the error if needed
+                // Тук може да добавиш логване на грешката
                 throw;
             }
         }
@@ -100,6 +89,35 @@ namespace AutoShop.Controllers
         {
             await _orderService.DeleteOrderAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        // Корекция на метода OrderDocument за избягване на AmbiguousMatchException
+
+        [HttpGet]
+        [ActionName("OrderDocument")]
+        public IActionResult OrderDocumentGet(int carId)
+        {
+            var model = new OrderDocumentViewModel
+            {
+                CarId = carId
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ActionName("OrderDocument")]
+        [ValidateAntiForgeryToken]
+        public IActionResult OrderDocumentPost(OrderDocumentViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // Тук можеш да обработиш запитването - запис, имейл и т.н.
+
+            TempData["Message"] = "Запитването е изпратено успешно!";
+            return RedirectToAction("Index", "Home");
         }
     }
 }

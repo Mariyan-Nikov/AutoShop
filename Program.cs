@@ -26,14 +26,11 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 // 4. Регистрация на твоите услуги
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
-builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IDealerService, DealerService>();
-
-
+builder.Services.AddScoped<IOrderDocumentService, OrderDocumentService>();
 
 // 5. Добавяне на MVC и Razor Pages
 builder.Services.AddControllersWithViews();

@@ -12,13 +12,13 @@ namespace AutoShop.Data
         {
         }
         public DbSet<Car> Cars { get; set; } = null!;
-        public DbSet<Customer> Customers { get; set; } = null!;
         public DbSet<Order> Orders { get; set; } = null!;
-        public DbSet<OrderItem> OrderItems { get; set; } = null!;
         public DbSet<Review> Reviews { get; set; } = null!;
         public DbSet<Dealer> Dealers { get; set; }
         public DbSet<Category> Categories { get; set; } = null!;
         public DbSet<Setting> Settings { get; set; } = null!;
+        public DbSet<OrderDocument> OrderDocuments { get; set; }
+
 
     }
 }

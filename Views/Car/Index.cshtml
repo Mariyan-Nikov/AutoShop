@@ -7,9 +7,10 @@
     <button type="submit" class="btn btn-primary mt-2">Търси</button>
 </form>
 
-<table class="table table-striped">
-    <thead>
+<table class="table table-striped align-middle text-center">
+    <thead class="table-dark">
         <tr>
+            <th>Снимка</th>
             <th>Марка</th>
             <th>Модел</th>
             <th>Година</th>
@@ -23,6 +24,16 @@
             foreach (var car in Model.Cars)
             {
                 <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(car.ImageFileName))
+                        {
+                            <img src="~/images/@car.ImageFileName" alt="Car Image" width="100" class="img-thumbnail shadow-sm" />
+                        }
+                        else
+                        {
+                            <span class="text-muted">Няма снимка</span>
+                        }
+                    </td>
                     <td>@car.Brand</td>
                     <td>@car.Model</td>
                     <td>@car.Year</td>
@@ -38,7 +49,7 @@
         else
         {
             <tr>
-                <td colspan="5" class="text-center">Няма намерени коли.</td>
+                <td colspan="6" class="text-center">Няма намерени коли.</td>
             </tr>
         }
     </tbody>
@@ -47,7 +58,7 @@
 @if (Model.TotalPages > 1)
 {
     <nav aria-label="Пагинация">
-        <ul class="pagination">
+        <ul class="pagination justify-content-center">
             @for (int i = 1; i <= Model.TotalPages; i++)
             {
                 <li class="page-item @(i == Model.CurrentPage ? "active" : "")">

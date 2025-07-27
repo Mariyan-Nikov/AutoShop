@@ -10,5 +10,7 @@
         public int Year { get; set; }
 
         public string RegistrationNumber { get; set; } = null!;
+
+        public string? ImageFileName { get; set; }
     }
 }

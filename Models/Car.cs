@@ -22,6 +22,10 @@ namespace AutoShop.Models
 
         public string? Description { get; set; }
 
+        [Required(ErrorMessage = "RegistrationNumber is required")]
+        [StringLength(50, ErrorMessage = "RegistrationNumber cannot be longer than 50 characters")]
         public string RegistrationNumber { get; set; } = null!;
+
+        public string? ImageFileName { get; set; }
     }
 }

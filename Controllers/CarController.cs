@@ -1,24 +1,27 @@
 ﻿using AutoShop.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using AutoShop.Services.Interfaces;
 using AutoShop.ViewModels.Car;
+using Microsoft.AspNetCore.Mvc;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace AutoShop.Controllers
 {
     public class CarController : Controller
     {
         private readonly ICarService _carService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public CarController(ICarService carService)
+        public CarController(ICarService carService, IWebHostEnvironment webHostEnvironment)
         {
             _carService = carService;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // Index с търсене и странициране
         public async Task<IActionResult> Index(string? searchTerm, int currentPage = 1)
         {
-            int carsPerPage = 5; // можеш да го направиш configurable, ако искаш
+            int carsPerPage = 5;
             var model = await _carService.GetAllAsync(searchTerm, currentPage, carsPerPage);
             return View(model);
         }
@@ -39,10 +42,29 @@ namespace AutoShop.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Car car)
+        public async Task<IActionResult> Create(Car car, IFormFile imageFile)
         {
             if (!ModelState.IsValid)
                 return View(car);
+
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+
+                // Създаване на директория, ако липсва
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                string filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(fileStream);
+                }
+
+                car.ImageFileName = fileName;
+            }
 
             await _carService.AddCarAsync(car);
             return RedirectToAction(nameof(Index));

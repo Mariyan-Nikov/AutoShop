@@ -39,10 +39,10 @@ builder.Services.AddRazorPages();
 var app = builder.Build();
 
 // 6. Seed на роли и задаване на първия потребител като админ
-// Вкарваме асинхронния seed в метод, който извикваме синхронно
 SeedRolesAndAdminUser(app.Services).GetAwaiter().GetResult();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection(); // <- Тук коментираме, защото не ползваш HTTPS
+
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -62,11 +62,13 @@ app.MapRazorPages();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    // Обработка на изключения – връща към ErrorController за 500
+    app.UseExceptionHandler("/Error/500");
     app.UseHsts();
 }
 
-app.UseStatusCodePagesWithReExecute("/Home/StatusCode", "?code={0}");
+// Обработка на статус кодове – връща към ErrorController с код (404, 403, ...)
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
 app.Run();
 

@@ -11,14 +11,14 @@ namespace AutoShop.Services
 {
     public class CarService : ICarService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context; // DI за EF Core контекста
 
-        public CarService(ApplicationDbContext context)
+        public CarService(ApplicationDbContext context) // Конструктор за инжектиране на контекста
         {
             _context = context;
         }
 
-        // Връща всички коли за drop-down, OrderItem и други вътрешни нужди
+        // Списък от коли за dropdown/вътрешни нужди (може AsNoTracking за четене)
         public async Task<IEnumerable<CarViewModel>> GetAllAsync()
         {
             return await _context.Cars
@@ -33,27 +33,27 @@ namespace AutoShop.Services
                 .ToListAsync();
         }
 
-        // Връща кола по ID
+        // Връща кола по ID (FindAsync ползва кеш + ключ)
         public async Task<Car?> GetCarByIdAsync(int id)
         {
             return await _context.Cars.FindAsync(id);
         }
 
-        // Добавяне на нова кола
+        // Добавяне на нова кола (SaveChangesAsync комитва)
         public async Task AddCarAsync(Car car)
         {
             await _context.Cars.AddAsync(car);
             await _context.SaveChangesAsync();
         }
 
-        // Обновяване на съществуваща кола
+        // Обновяване на съществуваща кола (Update маркира като Modified)
         public async Task UpdateCarAsync(Car car)
         {
             _context.Cars.Update(car);
             await _context.SaveChangesAsync();
         }
 
-        // Изтриване на кола по ID
+        // Изтриване на кола по ID (проверка за null преди Remove)
         public async Task DeleteCarAsync(int id)
         {
             var car = await _context.Cars.FindAsync(id);
@@ -64,12 +64,12 @@ namespace AutoShop.Services
             }
         }
 
-        // Връща коли с търсене и странициране
+        // Търсене и странициране на коли (search + paging + projection)
         public async Task<CarQueryModel> GetAllAsync(string? searchTerm, int currentPage, int carsPerPage)
         {
-            var carsQuery = _context.Cars.AsQueryable();
+            var carsQuery = _context.Cars.AsQueryable(); // База за филтриране (може AsNoTracking)
 
-            if (!string.IsNullOrWhiteSpace(searchTerm))
+            if (!string.IsNullOrWhiteSpace(searchTerm)) // Нормализиране на заявката
             {
                 searchTerm = searchTerm.ToLower();
                 carsQuery = carsQuery.Where(c =>
@@ -78,12 +78,12 @@ namespace AutoShop.Services
                     c.RegistrationNumber.ToLower().Contains(searchTerm));
             }
 
-            var totalCars = await carsQuery.CountAsync();
+            var totalCars = await carsQuery.CountAsync(); // Общо за пагинацията
 
             var cars = await carsQuery
-                .OrderByDescending(c => c.Id)
-                .Skip((currentPage - 1) * carsPerPage)
-                .Take(carsPerPage)
+                .OrderByDescending(c => c.Id) // Подредба по ново към старо
+                .Skip((currentPage - 1) * carsPerPage) // Прескачане за страницата
+                .Take(carsPerPage) // Лимит на страница
                 .Select(c => new CarViewModel
                 {
                     Id = c.Id,
@@ -92,17 +92,16 @@ namespace AutoShop.Services
                     Year = c.Year,
                     RegistrationNumber = c.RegistrationNumber
                 })
-                .ToListAsync();
+                .ToListAsync(); // Материализация на резултатите
 
             return new CarQueryModel
             {
-                Cars = cars,
-                SearchTerm = searchTerm,
-                CurrentPage = currentPage,
-                TotalCars = totalCars,
-                CarsPerPage = carsPerPage
+                Cars = cars, // Текуща страница резултати
+                SearchTerm = searchTerm, // Ехо на търсенето
+                CurrentPage = currentPage, // Номер на страница
+                TotalCars = totalCars, // Брой за всички страници
+                CarsPerPage = carsPerPage // Размер на страница
             };
-
         }
     }
 }

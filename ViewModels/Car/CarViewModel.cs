@@ -1,16 +1,25 @@
-﻿namespace AutoShop.ViewModels.Car
+﻿// Дефинира се пространството от имена, в което се намира този модел — ViewModel за представяне на данни за кола
+namespace AutoShop.ViewModels.Car
 {
+    // Представя данните за една кола, които ще се използват във View слоя (например при списък или детайлен изглед)
     public class CarViewModel
     {
+        // Уникален идентификатор на колата
         public int Id { get; set; }
+
+        // Марката на колата (напр. BMW, Toyota) — null! показва, че никога няма да е null на практика, въпреки че компилаторът го маркира като такъв
         public string Brand { get; set; } = null!;
 
+        // Моделът на колата (напр. Corolla, X5) — също е белязан с null!, т.е. очаква се да се зададе винаги валидна стойност
         public string Model { get; set; } = null!;
 
+        // Годината на производство на автомобила
         public int Year { get; set; }
 
+        // Регистрационният номер на колата (пример: CB1234AB) — също очакван винаги като валидна стойност
         public string RegistrationNumber { get; set; } = null!;
 
+        // Име на файла с изображението на автомобила (ако има такова) — стойността може да бъде null
         public string? ImageFileName { get; set; }
     }
 }

@@ -12,34 +12,38 @@ namespace AutoShop.Controllers
         private readonly ICarService _carService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
+        // Конструктор с dependency injection за услугата и информация за хост средата
         public CarController(ICarService carService, IWebHostEnvironment webHostEnvironment)
         {
             _carService = carService;
             _webHostEnvironment = webHostEnvironment;
         }
 
-        // Index с търсене и странициране
+        // Действие Index: показва списък с коли с опция за търсене и странициране
         public async Task<IActionResult> Index(string? searchTerm, int currentPage = 1)
         {
-            int carsPerPage = 5;
+            int carsPerPage = 5; // Брой коли на страница
             var model = await _carService.GetAllAsync(searchTerm, currentPage, carsPerPage);
             return View(model);
         }
 
+        // Действие Details: показва детайлите за конкретна кола по нейното ID
         public async Task<IActionResult> Details(int id)
         {
             var car = await _carService.GetCarByIdAsync(id);
             if (car == null)
-                return NotFound();
+                return NotFound(); // Връща 404 ако колата не съществува
 
             return View(car);
         }
 
+        // GET: Създаване на нова кола - връща празна форма
         public IActionResult Create()
         {
             return View();
         }
 
+        // POST: Създаване на нова кола с качване на изображение
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Car car, IFormFile imageFile)
@@ -47,6 +51,7 @@ namespace AutoShop.Controllers
             if (!ModelState.IsValid)
                 return View(car);
 
+            // Качване на изображението, ако има такова
             if (imageFile != null && imageFile.Length > 0)
             {
                 string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
@@ -62,13 +67,14 @@ namespace AutoShop.Controllers
                     await imageFile.CopyToAsync(fileStream);
                 }
 
-                car.ImageFileName = fileName;
+                car.ImageFileName = fileName; // Записва името на файла в модела
             }
 
             await _carService.AddCarAsync(car);
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Редактиране на кола по ID
         public async Task<IActionResult> Edit(int id)
         {
             var car = await _carService.GetCarByIdAsync(id);
@@ -78,6 +84,7 @@ namespace AutoShop.Controllers
             return View(car);
         }
 
+        // POST: Редактиране на кола с опция за смяна на изображение
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Car car, IFormFile imageFile)
@@ -85,6 +92,7 @@ namespace AutoShop.Controllers
             if (!ModelState.IsValid)
                 return View(car);
 
+            // Ако има качване на ново изображение, го записва
             if (imageFile != null && imageFile.Length > 0)
             {
                 string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
@@ -107,6 +115,7 @@ namespace AutoShop.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Потвърждение за изтриване на кола
         public async Task<IActionResult> Delete(int id)
         {
             var car = await _carService.GetCarByIdAsync(id);
@@ -116,6 +125,7 @@ namespace AutoShop.Controllers
             return View(car);
         }
 
+        // POST: Изтриване на кола
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

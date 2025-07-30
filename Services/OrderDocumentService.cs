@@ -1,37 +1,38 @@
-﻿using AutoShop.Data; // Тук е твоят DbContext
-using AutoShop.Services.Interfaces;
-using AutoShop.ViewModels.OrderDocument;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AutoShop.Data; // DbContext за достъп до базата
+using AutoShop.Services.Interfaces; // Контрактът за сервиса
+using AutoShop.ViewModels.OrderDocument; // ViewModel за проекция
+using Microsoft.EntityFrameworkCore; // EF Core async/LINQ
+using System.Collections.Generic; // Колекции
+using System.Linq; // LINQ оператори
+using System.Threading.Tasks; // Async/await
 
 namespace AutoShop.Services
 {
-    public class OrderDocumentService : IOrderDocumentService
+    public class OrderDocumentService : IOrderDocumentService // Сервис за заявки за документи
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context; // DI на контекста
 
-        public OrderDocumentService(ApplicationDbContext context)
+        public OrderDocumentService(ApplicationDbContext context) // Конструктор с инжекция
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<OrderDocumentViewModel>> GetAllRequestsAsync()
+        public async Task<IEnumerable<OrderDocumentViewModel>> GetAllRequestsAsync() // Чете активни заявки като ViewModel
         {
             return await _context.OrderDocuments
-                .Where(o => o.IsActive)
-                .Select(o => new OrderDocumentViewModel
+                .AsNoTracking() // Без тракинг за по-бързо четене
+                .Where(o => o.IsActive) // Само активните записи
+                .Select(o => new OrderDocumentViewModel // Проекция към лек модел за UI
                 {
-                    CarId = o.CarId,
-                    FullName = o.FullName,
-                    PhoneNumber = o.PhoneNumber,
-                    Email = o.Email,
-                    Message = o.Message,
-                    PreferredDate = o.PreferredDate
-                    // Ако искаш да върнеш CreatedOn, добави го във ViewModel
+                    CarId = o.CarId, // Идентификатор на колата
+                    FullName = o.FullName, // Име на клиента
+                    PhoneNumber = o.PhoneNumber, // Телефон
+                    Email = o.Email, // Имейл
+                    Message = o.Message, // Съобщение
+                    PreferredDate = o.PreferredDate // Предпочитана дата
+                    // Добави CreatedOn във ViewModel, ако ти трябва
                 })
-                .ToListAsync();
+                .ToListAsync(); // Изпълнение на заявката асинхронно
         }
     }
 }

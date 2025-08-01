@@ -2,17 +2,24 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bg">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - AutoShop</title>
 
+    <!-- Включване на Bootstrap CSS и потребителски стилове -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AutoShop.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
 
     <style>
+        /* Стилове за светла и тъмна тема */
+        body {
+            transition: background-color 0.3s, color 0.3s;
+        }
+
         .dark-theme {
             background-color: #121212 !important;
             color: #e0e0e0 !important;
@@ -20,7 +27,6 @@
 
             .dark-theme .navbar {
                 background-color: #1f1f1f !important;
-                color: #e0e0e0 !important;
             }
 
             .dark-theme a {
@@ -60,6 +66,7 @@
                     border-color: #0a58ca;
                 }
 
+        /* Бутон за смяна на тема */
         .theme-toggle {
             border: none;
             background: none;
@@ -73,10 +80,50 @@
             .theme-toggle:hover {
                 background-color: rgba(255,255,255,0.1);
             }
+
+        /* Стилове за футър - светла тема */
+        .footer-custom {
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+
+            .footer-custom h5 {
+                color: #000;
+                font-weight: 600;
+            }
+
+            .footer-custom a {
+                color: #0d6efd;
+                text-decoration: none;
+            }
+
+                .footer-custom a:hover {
+                    text-decoration: underline;
+                }
+
+        /* Стилове за футър - тъмна тема */
+        .dark-theme .footer-custom {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
+
+            .dark-theme .footer-custom h5 {
+                color: #ffffff;
+            }
+
+            .dark-theme .footer-custom a {
+                color: #66b2ff !important;
+            }
+
+                .dark-theme .footer-custom a:hover {
+                    text-decoration: underline;
+                    color: #90caf9 !important;
+                }
     </style>
 </head>
 <body>
     <header>
+        <!-- Навигационно меню -->
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AutoShop</a>
@@ -88,45 +135,44 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Начало</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Защита на лични данни</a>
                         </li>
+
+                        <!-- Показва се само ако потребителят е влязъл и е администратор -->
                         @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="Home" asp-action="Index">Admin Panel</a>
+                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="Home" asp-action="Index">Административен панел</a>
                             </li>
                         }
 
+                        <!-- Dropdown меню за автомобили -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark @(ViewContext.RouteData.Values["controller"]?.ToString() == "Car" ? "active" : "")"
                                href="#" id="carsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Cars Catalog
+                                Каталог Автомобили
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="carsDropdown">
                                 <li>
-                                    <a class="dropdown-item" asp-controller="Car" asp-action="Index">List Cars</a>
+                                    <a class="dropdown-item" asp-controller="Car" asp-action="Index">Списък автомобили</a>
                                 </li>
-
                                 @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator"))
                                 {
                                     <li>
-                                        <a class="dropdown-item" asp-controller="Car" asp-action="Create">Add New Car</a>
+                                        <a class="dropdown-item" asp-controller="Car" asp-action="Create">Добави нов автомобил</a>
                                     </li>
                                     <li><hr class="dropdown-divider" /></li>
                                 }
-
-                                @* <li>
-                                    <a class="dropdown-item" asp-controller="Car" asp-action="All">Search Cars</a>
-                                </li> *@
                             </ul>
                         </li>
                     </ul>
 
+                    <!-- Бутон за смяна на тема и част за вход/регистрация -->
                     <div class="d-flex align-items-center gap-2">
-                        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌗</button>
+                        <button class="theme-toggle" onclick="toggleTheme()" title="Смени тема">🌗</button>
                         <partial name="_LoginPartial" />
                     </div>
                 </div>
@@ -134,17 +180,60 @@
         </nav>
     </header>
 
+    <!-- Основно съдържание -->
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
+    <!-- Футър -->
+    <footer class="text-center text-lg-start mt-5 footer-custom">
+        <div class="container p-4">
+            <div class="row">
+                <!-- За AutoShop -->
+                <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-uppercase fw-bold">За AutoShop</h5>
+                    <p>
+                        AutoShop – вашата доверена платформа за купуване на автомобили.
+                    </p>
+                </div>
+
+                <!-- Бързи връзки -->
+                <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-uppercase fw-bold">Бързи връзки</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li><a href="/" class="text-decoration-none">Начало</a></li>
+                        <li><a href="/Car/Index" class="text-decoration-none">Разгледай автомобили</a></li>
+                        <li><a href="/Home/Privacy" class="text-decoration-none">Защита на лични данни</a></li>
+                        <li><a href="/Contact" class="text-decoration-none">Свържи се с нас</a></li>
+                    </ul>
+                </div>
+
+                <!-- Социални мрежи -->
+                <div class="col-lg-4 col-md-12 mb-4 mb-md-0">
+                    <h5 class="text-uppercase fw-bold">Следвайте ни</h5>
+                    <a href="#" class="me-3 fs-4"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="me-3 fs-4"><i class="bi bi-twitter"></i></a>
+                    <a href="#" class="me-3 fs-4"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="me-3 fs-4"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center p-3 border-top" style="background-color: rgba(0, 0, 0, 0.05);">
+            © @DateTime.Now.Year AutoShop. Всички права запазени.
+        </div>
+    </footer>
+
+    <!-- Скриптове -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
 
     <script>
+        // При зареждане проверява дали е избрана тъмна тема и я активира
         (function () {
             const theme = localStorage.getItem('theme');
             if (theme === 'dark') {
@@ -152,10 +241,26 @@
             }
         })();
 
+        // Функция за смяна на тема (светла/тъмна)
         function toggleTheme() {
             const isDark = document.body.classList.toggle('dark-theme');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         }
+
+        // Създаване на SignalR връзка към carHub
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/carHub")
+            .build();
+
+        // При получаване на съобщение от SignalR – показва alert с новата кола
+        connection.on("ReceiveCarNotification", function (message) {
+            alert("Нова кола: " + message);
+        });
+
+        // Стартира връзката с SignalR
+        connection.start().catch(function (err) {
+            console.error(err.toString());
+        });
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)

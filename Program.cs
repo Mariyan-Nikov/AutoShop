@@ -1,4 +1,5 @@
 using AutoShop.Data;
+using AutoShop.Hubs;
 using AutoShop.Services;
 using AutoShop.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -31,6 +32,8 @@ builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IDealerService, DealerService>();
 builder.Services.AddScoped<IOrderDocumentService, OrderDocumentService>();
+builder.Services.AddSignalR();
+
 
 // 5. Добавяне на MVC и Razor Pages
 builder.Services.AddControllersWithViews();
@@ -69,6 +72,8 @@ if (!app.Environment.IsDevelopment())
 
 // Обработка на статус кодове – връща към ErrorController с код (404, 403, ...)
 app.UseStatusCodePagesWithReExecute("/Error/{0}");
+
+app.MapHub<CarHub>("/carHub");
 
 app.Run();
 

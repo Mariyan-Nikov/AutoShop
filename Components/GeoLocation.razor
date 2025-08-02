@@ -1,0 +1,76 @@
+﻿@using Microsoft.JSInterop
+@page "/geolocation"
+@inject IJSRuntime JS
+
+<div class="container my-5">
+    <div class="card shadow border-0 rounded-4 bg-light">
+        <div class="card-body p-5 text-center">
+            <h2 class="mb-4 text-primary">
+                <i class="bi bi-geo-alt-fill"></i> Открий местоположението си
+            </h2>
+
+            <button class="btn btn-lg btn-outline-primary px-4 py-2 mb-4 fw-bold shadow-sm"
+                    @onclick="GetLocation" disabled="@isLoading">
+                <i class="bi bi-crosshair2"></i>
+                @if (isLoading)
+                {
+                    <span class="spinner-border spinner-border-sm ms-2" role="status"></span>
+                }
+                else
+                {
+                    <span class="ms-2">Вземи локация</span>
+                }
+            </button>
+
+            @if (!string.IsNullOrEmpty(Error))
+            {
+                <div class="alert alert-danger d-flex align-items-center justify-content-center mt-4">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span>@Error</span>
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(Location))
+            {
+                <div class="alert alert-success d-flex align-items-center justify-content-center mt-4">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <span>Локация: <strong>@Location</strong></span>
+                </div>
+
+                <div class="mt-4" id="map" style="height: 400px; border-radius: 12px;"></div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? Location;
+    private string? Error;
+    private bool isLoading = false;
+
+    private async Task GetLocation()
+    {
+        isLoading = true;
+        Error = null;
+        Location = null;
+
+        try
+        {
+            var pos = await JS.InvokeAsync<GeoPosition>("getPosition");
+            Location = $"{pos.Latitude:F6}, {pos.Longitude:F6}";
+
+            await JS.InvokeVoidAsync("showMap", pos.Latitude, pos.Longitude);
+        }
+        catch (Exception ex)
+        {
+            Error = $"Грешка при получаване на локация: {ex.Message}";
+        }
+
+        isLoading = false;
+    }
+
+    private class GeoPosition
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
+}

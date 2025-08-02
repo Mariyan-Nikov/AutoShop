@@ -61,5 +61,9 @@ namespace AutoShop.Controllers
 
             return View();
         }
+        public IActionResult Geolocation()
+        {
+            return View();
+        }
     }
 }

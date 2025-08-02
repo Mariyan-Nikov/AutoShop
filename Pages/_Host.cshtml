@@ -1,0 +1,26 @@
+﻿@page "/geolocation"
+@namespace AutoShop.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="utf-8" />
+    <title>GeoLocation</title>
+    <base href="~/" />
+    <link href="css/site.css" rel="stylesheet" />
+</head>
+<body>
+    <app>
+        <component type="typeof(AutoShop.Components.GeoLocation)" render-mode="ServerPrerendered" />
+    </app>
+
+    <script src="_framework/blazor.server.js"></script>
+    <script src="js/site.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</body>
+</html>

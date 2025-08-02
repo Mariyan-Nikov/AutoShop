@@ -138,14 +138,14 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Начало</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Защита на лични данни</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Лични данни</a>
                         </li>
 
                         <!-- Показва се само ако потребителят е влязъл и е администратор -->
                         @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="Home" asp-action="Index">Административен панел</a>
+                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="Home" asp-action="Index">Админ панел</a>
                             </li>
                         }
 
@@ -153,7 +153,7 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark @(ViewContext.RouteData.Values["controller"]?.ToString() == "Car" ? "active" : "")"
                                href="#" id="carsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Каталог Автомобили
+                                Каталог
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="carsDropdown">
                                 <li>
@@ -205,7 +205,7 @@
                     <ul class="list-unstyled mb-0">
                         <li><a href="/" class="text-decoration-none">Начало</a></li>
                         <li><a href="/Car/Index" class="text-decoration-none">Разгледай автомобили</a></li>
-                        <li><a href="/Home/Privacy" class="text-decoration-none">Защита на лични данни</a></li>
+                        <li><a href="/Home/Privacy" class="text-decoration-none">Лични данни</a></li>
                         <li><a href="/Contact" class="text-decoration-none">Свържи се с нас</a></li>
                     </ul>
                 </div>
@@ -262,6 +262,25 @@
             console.error(err.toString());
         });
     </script>
+    <script src="js/site.js"></script>
+    <script>
+        window.getPosition = () => {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject("Геолокацията не се поддържа");
+                }
+                navigator.geolocation.getCurrentPosition(
+                    pos => resolve({
+                        latitude: pos.coords.latitude,
+                        longitude: pos.coords.longitude
+                    }),
+                    err => reject(err.message)
+                );
+            });
+        };
+    </script>
+
+
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

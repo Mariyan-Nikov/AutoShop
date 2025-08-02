@@ -24,7 +24,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// 4. Регистрация на твоите услуги
+// 4. Регистрация на услугите
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
@@ -32,19 +32,21 @@ builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IDealerService, DealerService>();
 builder.Services.AddScoped<IOrderDocumentService, OrderDocumentService>();
-builder.Services.AddSignalR();
 
-
-// 5. Добавяне на MVC и Razor Pages
+// 5. Добавяне на MVC, Razor Pages и Blazor Server
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor(); // Важна добавка за Blazor Server
+
+// 6. Добавяне на SignalR хъб
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
-// 6. Seed на роли и задаване на първия потребител като админ
-SeedRolesAndAdminUser(app.Services).GetAwaiter().GetResult();
+// 7. Seed роли и първи администратор
+await SeedRolesAndAdminUser(app.Services);
 
-//app.UseHttpsRedirection(); // <- Тук коментираме, защото не ползваш HTTPS
+app.UseHttpsRedirection(); // Ако не ползваш HTTPS, можеш да го коментираш
 
 app.UseStaticFiles();
 
@@ -52,6 +54,10 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// 8. Добавяне на маршрут за Blazor Server хъб
+app.MapBlazorHub();
+app.MapHub<CarHub>("/carHub");
 
 app.MapControllerRoute(
     name: "areas",
@@ -65,19 +71,15 @@ app.MapRazorPages();
 
 if (!app.Environment.IsDevelopment())
 {
-    // Обработка на изключения – връща към ErrorController за 500
     app.UseExceptionHandler("/Error/500");
     app.UseHsts();
 }
 
-// Обработка на статус кодове – връща към ErrorController с код (404, 403, ...)
+// Обработка на статус кодове
 app.UseStatusCodePagesWithReExecute("/Error/{0}");
-
-app.MapHub<CarHub>("/carHub");
 
 app.Run();
 
-// Асинхронен метод за seed
 static async Task SeedRolesAndAdminUser(IServiceProvider services)
 {
     using var scope = services.CreateScope();
